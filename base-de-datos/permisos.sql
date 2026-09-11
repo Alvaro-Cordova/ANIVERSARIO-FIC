@@ -66,6 +66,9 @@ grant execute on function private.registrar_escaneo_sala_impl(uuid, uuid) to aut
 grant execute on function private.calcular_presencia_actividad_impl(uuid, uuid) to authenticated;
 grant execute on function private.mi_asistencia_evento_impl(uuid) to authenticated;
 grant execute on function private.reporte_asistencia_curso_impl(uuid, uuid) to authenticated;
+grant execute on function private.calcular_elegibilidad_certificado_impl(uuid, uuid) to authenticated;
+grant execute on function private.mi_elegibilidad_certificado_impl(uuid) to authenticated;
+grant execute on function private.emitir_mi_certificado_impl(uuid) to authenticated;
 grant execute on function private.emitir_certificado_manual_impl(uuid, uuid, text, uuid, text) to authenticated;
 
 -- Verificación pública.
@@ -86,6 +89,8 @@ grant execute on function public.quitar_curso_asistencia(uuid, uuid) to authenti
 grant execute on function public.registrar_escaneo_sala(uuid, uuid) to authenticated;
 grant execute on function public.mi_asistencia_evento(uuid) to authenticated;
 grant execute on function public.reporte_asistencia_curso(uuid, uuid) to authenticated;
+grant execute on function public.mi_elegibilidad_certificado(uuid) to authenticated;
+grant execute on function public.emitir_mi_certificado(uuid) to authenticated;
 grant execute on function public.emitir_certificado_manual(uuid, uuid, text, uuid, text) to authenticated;
 grant execute on function public.verificar_certificado(text) to anon, authenticated;
 

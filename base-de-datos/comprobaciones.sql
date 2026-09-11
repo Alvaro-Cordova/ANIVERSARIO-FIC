@@ -59,6 +59,8 @@ with funciones(firma) as (
         ('public.registrar_escaneo_sala(uuid,uuid)'),
         ('public.mi_asistencia_evento(uuid)'),
         ('public.reporte_asistencia_curso(uuid,uuid)'),
+        ('public.mi_elegibilidad_certificado(uuid)'),
+        ('public.emitir_mi_certificado(uuid)'),
         ('public.emitir_certificado_manual(uuid,uuid,text,uuid,text)'),
         ('public.verificar_certificado(text)')
 )
@@ -99,3 +101,17 @@ select *
 from public.sesiones_presencia
 where salida_en is not null
   and salida_en < entrada_en;
+
+
+-- V3.2.1: el origen de emisión debe ser válido.
+select *
+from public.certificados
+where origen_emision not in ('automatico_usuario', 'manual_admin');
+
+-- V3.2.1: porcentajes históricos fuera de rango deben dar 0 filas.
+select *
+from public.certificados
+where (porcentaje_asistencia is not null
+       and porcentaje_asistencia not between 0 and 100)
+   or (porcentaje_requerido is not null
+       and porcentaje_requerido not between 0 and 100);

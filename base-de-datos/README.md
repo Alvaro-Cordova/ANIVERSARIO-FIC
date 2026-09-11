@@ -1,4 +1,4 @@
-# BASE DE DATOS V3.2 — CANDIDATA PARA PRUEBAS
+# BASE DE DATOS V3.2.1 — CANDIDATA PARA PRUEBAS
 
 ## Si instalas desde cero
 
@@ -75,3 +75,31 @@ La migración elimina `public.asistencias` de V3.1 porque ese modelo ya no se us
 En este momento esa tabla contiene únicamente las asistencias ficticias creadas
 durante las pruebas. No ejecutar esta migración sobre datos reales sin una
 migración histórica específica.
+
+
+## Actualización V3.2 -> V3.2.1
+
+Si el proyecto Supabase ya tiene V3.2, ejecutar únicamente:
+
+```text
+1. MIGRACION_V3_2_A_V3_2_1.sql
+2. funciones-v3_2_1-migracion.sql
+3. permisos-v3_2_1-migracion.sql
+4. comprobaciones.sql
+```
+
+La V3.2.1 añade autoemisión segura de certificados por el participante.
+La emisión administrativa se mantiene como respaldo.
+
+
+## Opción simplificada de actualización
+
+Para el proyecto DEV que ya está en V3.2 también se incluye:
+
+```text
+ACTUALIZACION_V3_2_A_V3_2_1_COMPLETA.sql
+```
+
+Ese archivo reúne la migración estructural, las funciones nuevas y sus permisos.
+Se ejecuta una sola vez y reemplaza la necesidad de ejecutar los tres archivos
+de migración por separado.

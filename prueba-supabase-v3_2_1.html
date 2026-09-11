@@ -124,51 +124,45 @@
     <p class="nota">Solo un administrador debe poder generar estos reportes.</p>
 </section>
 
+
+<section>
+    <h2>10. Mi certificado - V3.2.1</h2>
+
+    <div class="fila">
+        <button id="btnElegibilidadCertificado">
+            Consultar elegibilidad
+        </button>
+
+        <button id="btnEmitirMiCertificado">
+            Generar mi certificado
+        </button>
+    </div>
+
+    <div class="fila">
+        <input
+            id="codigoMiCertificado"
+            type="text"
+            placeholder="Código CERT-..."
+        >
+
+        <button id="btnVerificarMiCertificado">
+            Verificar certificado
+        </button>
+    </div>
+
+    <p class="nota">
+        El participante solo puede generar su propio certificado cuando
+        la base confirma que cumple el porcentaje mínimo de asistencia.
+    </p>
+</section>
+
 <section>
     <h2>Resultado</h2>
     <pre id="resultado">Esperando una prueba...</pre>
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
-<script type="module" src="./prueba-supabase-v3_2_excel.js"></script>
+<script type="module" src="./prueba-supabase-v3_2_1.js"></script>
 
 </body>
 </html>
-
-<section>
-    <h2>10. Seguridad RLS</h2>
-
-    <button id="btnVerSesiones">
-        Ver sesiones visibles para mi usuario
-    </button>
-
-    <button id="btnIntentarInsertarSesion">
-        Intentar crear asistencia manualmente
-    </button>
-</section>
-
-<section>
-    <h2>11. Certificados</h2>
-
-    <input
-        id="idUsuarioCertificado"
-        type="text"
-        placeholder="ID del participante"
-    >
-
-    <button id="btnEmitirCertificado">
-        Emitir certificado
-    </button>
-
-    <br><br>
-
-    <input
-        id="codigoCertificado"
-        type="text"
-        placeholder="Código CERT-..."
-    >
-
-    <button id="btnVerificarCertificado">
-        Verificar certificado
-    </button>
-</section>

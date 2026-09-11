@@ -597,6 +597,19 @@ create table public.certificados (
     estado text not null default 'emitido'
         check (estado in ('emitido', 'anulado')),
 
+    -- Permite distinguir certificados generados por el propio usuario
+    -- de emisiones administrativas excepcionales.
+    origen_emision text not null default 'manual_admin'
+        check (origen_emision in ('automatico_usuario', 'manual_admin')),
+
+    -- Snapshots del criterio utilizado al momento de emitir.
+    -- En certificados manuales pueden permanecer NULL.
+    porcentaje_asistencia numeric(5,2)
+        check (porcentaje_asistencia is null or porcentaje_asistencia between 0 and 100),
+
+    porcentaje_requerido numeric(5,2)
+        check (porcentaje_requerido is null or porcentaje_requerido between 0 and 100),
+
     -- Copias históricas.
     nombre_participante text not null,
     nombre_evento text not null,

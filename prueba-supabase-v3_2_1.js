@@ -749,137 +749,40 @@ document.getElementById('btnExcelVial').addEventListener('click', async () => {
     await descargarReporteExcel(CURSO_VIAL, 'asistencia_diseno_vial.xlsx')
 })
 
+
 // ============================================================
-// 11. SEGURIDAD RLS
+// 12. CERTIFICADO AUTOGESTIONADO - V3.2.1
 // ============================================================
 
 document
-    .getElementById('btnVerSesiones')
+    .getElementById('btnElegibilidadCertificado')
     .addEventListener('click', async () => {
 
-        const { data, error } =
-            await supabase
-                .from('sesiones_presencia')
-                .select(`
-                    id,
-                    usuario_id,
-                    sala_id,
-                    entrada_en,
-                    salida_en,
-                    estado
-                `)
-                .order('entrada_en')
-
-        mostrar({
-            data,
-            error
-        })
+        await ejecutarRpc(
+            'mi_elegibilidad_certificado',
+            {
+                p_evento_id: EVENTO_GRATUITO
+            }
+        )
     })
 
 
 document
-    .getElementById('btnIntentarInsertarSesion')
+    .getElementById('btnEmitirMiCertificado')
     .addEventListener('click', async () => {
 
-        const { data: usuarioData } =
-            await supabase.auth.getUser()
-
-        const usuarioId =
-            usuarioData.user?.id
-
-        if (!usuarioId) {
-            mostrar({
-                data: null,
-                error: {
-                    message: 'Debes iniciar sesión.'
-                }
-            })
-            return
-        }
-
         const { data, error } =
-            await supabase
-                .from('sesiones_presencia')
-                .insert({
-                    evento_id:
-                        '10000000-0000-0000-0000-000000000001',
-
-                    sala_id:
-                        '11000000-0000-0000-0000-000000000001',
-
-                    usuario_id:
-                        usuarioId,
-
-                    entrada_en:
-                        new Date().toISOString(),
-
-                    estado:
-                        'registrada'
-                })
-                .select()
-
-        mostrar({
-            data,
-            error
-        })
-    })
-
-// ============================================================
-// 12. CERTIFICADOS
-// ============================================================
-
-document
-    .getElementById('btnEmitirCertificado')
-    .addEventListener('click', async () => {
-
-        const usuarioId =
-            document
-                .getElementById('idUsuarioCertificado')
-                .value
-                .trim()
-
-        if (!usuarioId) {
-
-            mostrar({
-                data: null,
-                error: {
-                    message: 'Debes indicar el ID del participante.'
-                }
-            })
-
-            return
-        }
-
-        const { data, error } =
-            await supabase.rpc(
-                'emitir_certificado_manual',
+            await ejecutarRpc(
+                'emitir_mi_certificado',
                 {
-                    p_evento_id:
-                        '10000000-0000-0000-0000-000000000001',
-
-                    p_usuario_id:
-                        usuarioId,
-
-                    p_tipo:
-                        'participacion',
-
-                    p_actividad_id:
-                        null,
-
-                    p_pdf_url:
-                        null
+                    p_evento_id: EVENTO_GRATUITO
                 }
             )
-
-        mostrar({
-            data,
-            error
-        })
 
         if (!error && data?.codigo) {
 
             document
-                .getElementById('codigoCertificado')
+                .getElementById('codigoMiCertificado')
                 .value =
                 data.codigo
         }
@@ -887,12 +790,12 @@ document
 
 
 document
-    .getElementById('btnVerificarCertificado')
+    .getElementById('btnVerificarMiCertificado')
     .addEventListener('click', async () => {
 
         const codigo =
             document
-                .getElementById('codigoCertificado')
+                .getElementById('codigoMiCertificado')
                 .value
                 .trim()
 
@@ -908,16 +811,10 @@ document
             return
         }
 
-        const { data, error } =
-            await supabase.rpc(
-                'verificar_certificado',
-                {
-                    p_codigo: codigo
-                }
-            )
-
-        mostrar({
-            data,
-            error
-        })
+        await ejecutarRpc(
+            'verificar_certificado',
+            {
+                p_codigo: codigo
+            }
+        )
     })
