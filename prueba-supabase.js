@@ -281,3 +281,246 @@ document
             error
         })
     })
+
+const PONENCIA_V32 =
+    '30000000-0000-0000-0000-000000000001'
+
+const CURSO_SUELOS =
+    '12000000-0000-0000-0000-000000000001'
+
+const CURSO_VIAL =
+    '12000000-0000-0000-0000-000000000002'
+
+
+document
+    .getElementById('btnCursoSuelos')
+    .addEventListener('click', async () => {
+
+        const { data, error } =
+            await supabase.rpc(
+                'seleccionar_curso_asistencia',
+                {
+                    p_actividad_id: PONENCIA_V32,
+                    p_curso_id: CURSO_SUELOS
+                }
+            )
+
+        mostrar({ data, error })
+    })
+
+
+document
+    .getElementById('btnCursoVial')
+    .addEventListener('click', async () => {
+
+        const { data, error } =
+            await supabase.rpc(
+                'seleccionar_curso_asistencia',
+                {
+                    p_actividad_id: PONENCIA_V32,
+                    p_curso_id: CURSO_VIAL
+                }
+            )
+
+        mostrar({ data, error })
+    })
+
+const AUDITORIO_PRUEBA =
+    '11000000-0000-0000-0000-000000000001'
+
+const SALA_SECUNDARIA =
+    '11000000-0000-0000-0000-000000000002'
+
+
+document
+    .getElementById('btnEscanearAuditorio')
+    .addEventListener('click', async () => {
+
+        const token =
+            document.getElementById('tokenQrSala').value
+
+        const { data, error } =
+            await supabase.rpc(
+                'registrar_escaneo_sala',
+                {
+                    p_token: token,
+                    p_sala_id: AUDITORIO_PRUEBA
+                }
+            )
+
+        mostrar({ data, error })
+    })
+
+
+document
+    .getElementById('btnEscanearSala2')
+    .addEventListener('click', async () => {
+
+        const token =
+            document.getElementById('tokenQrSala').value
+
+        const { data, error } =
+            await supabase.rpc(
+                'registrar_escaneo_sala',
+                {
+                    p_token: token,
+                    p_sala_id: SALA_SECUNDARIA
+                }
+            )
+
+        mostrar({ data, error })
+    })
+
+document
+    .getElementById('btnMiAsistencia')
+    .addEventListener('click', async () => {
+
+        const EVENTO =
+            '10000000-0000-0000-0000-000000000001'
+
+        const { data, error } =
+            await supabase.rpc(
+                'mi_asistencia_evento',
+                {
+                    p_evento_id: EVENTO
+                }
+            )
+
+        mostrar({ data, error })
+    })
+
+const CURSO_SUELOS_REPORTE =
+    '12000000-0000-0000-0000-000000000001'
+
+const CURSO_VIAL_REPORTE =
+    '12000000-0000-0000-0000-000000000002'
+
+const PONENCIA_REPORTE =
+    '30000000-0000-0000-0000-000000000001'
+
+
+document
+    .getElementById('btnReporteSuelos')
+    .addEventListener('click', async () => {
+
+        const { data, error } =
+            await supabase.rpc(
+                'reporte_asistencia_curso',
+                {
+                    p_curso_id: CURSO_SUELOS_REPORTE,
+                    p_actividad_id: PONENCIA_REPORTE
+                }
+            )
+
+        mostrar({ data, error })
+    })
+
+
+document
+    .getElementById('btnReporteVial')
+    .addEventListener('click', async () => {
+
+        const { data, error } =
+            await supabase.rpc(
+                'reporte_asistencia_curso',
+                {
+                    p_curso_id: CURSO_VIAL_REPORTE,
+                    p_actividad_id: PONENCIA_REPORTE
+                }
+            )
+
+        mostrar({ data, error })
+    })
+
+async function descargarReporteExcel(
+    cursoId,
+    actividadId,
+    nombreArchivo
+) {
+
+    const { data, error } =
+        await supabase.rpc(
+            'reporte_asistencia_curso',
+            {
+                p_curso_id: cursoId,
+                p_actividad_id: actividadId
+            }
+        )
+
+    if (error) {
+        mostrar({
+            data: null,
+            error
+        })
+        return
+    }
+
+    const filas = data.map((registro, index) => ({
+        "N°": index + 1,
+        "Correo": registro.correo,
+        "Participante": registro.participante,
+        "Curso": registro.curso,
+        "Docente": registro.docente,
+        "Ponencia": registro.actividad,
+
+        "Registró esta ponencia para el curso":
+            registro.seleccionado_para_curso
+                ? "Sí"
+                : "No",
+
+        "Primera entrada":
+            registro.primera_entrada ?? "",
+
+        "Última salida":
+            registro.ultima_salida ?? "",
+
+        "Minutos presentes":
+            registro.minutos_presentes,
+
+        "Porcentaje de asistencia":
+            `${registro.porcentaje_presencia}%`,
+
+        "Estado":
+            registro.estado_academico
+    }))
+
+    const hoja =
+        XLSX.utils.json_to_sheet(filas)
+
+    const libro =
+        XLSX.utils.book_new()
+
+    XLSX.utils.book_append_sheet(
+        libro,
+        hoja,
+        "Asistencia"
+    )
+
+    XLSX.writeFile(
+        libro,
+        nombreArchivo
+    )
+}
+
+document
+    .getElementById('btnExcelSuelos')
+    .addEventListener('click', async () => {
+
+        await descargarReporteExcel(
+            '12000000-0000-0000-0000-000000000001',
+            '30000000-0000-0000-0000-000000000001',
+            'asistencia_mecanica_de_suelos.xlsx'
+        )
+    })
+
+
+document
+    .getElementById('btnExcelVial')
+    .addEventListener('click', async () => {
+
+        await descargarReporteExcel(
+            '12000000-0000-0000-0000-000000000002',
+            '30000000-0000-0000-0000-000000000001',
+            'asistencia_diseno_vial.xlsx'
+        )
+    })
