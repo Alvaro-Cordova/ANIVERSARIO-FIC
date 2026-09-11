@@ -11,6 +11,7 @@
 alter table public.perfiles enable row level security;
 alter table public.eventos enable row level security;
 alter table public.inscripciones_evento enable row level security;
+alter table public.salas enable row level security;
 alter table public.actividades enable row level security;
 alter table public.ponentes enable row level security;
 alter table public.actividad_ponentes enable row level security;
@@ -18,7 +19,10 @@ alter table public.equipos enable row level security;
 alter table public.miembros_equipo enable row level security;
 alter table public.inscripciones_actividad enable row level security;
 alter table public.credenciales_qr enable row level security;
-alter table public.asistencias enable row level security;
+alter table public.cursos enable row level security;
+alter table public.curso_participantes enable row level security;
+alter table public.asignaciones_asistencia_curso enable row level security;
+alter table public.sesiones_presencia enable row level security;
 alter table public.certificados enable row level security;
 
 -- ============================================================
@@ -55,7 +59,13 @@ grant execute on function private.unirse_equipo_impl(uuid) to authenticated;
 grant execute on function private.inscribir_equipo_actividad_impl(uuid) to authenticated;
 grant execute on function private.obtener_o_crear_qr_impl(uuid) to authenticated;
 grant execute on function private.regenerar_qr_impl(uuid) to authenticated;
-grant execute on function private.registrar_escaneo_qr_impl(uuid, uuid) to authenticated;
+grant execute on function private.agregar_mi_curso_impl(uuid) to authenticated;
+grant execute on function private.seleccionar_curso_asistencia_impl(uuid, uuid) to authenticated;
+grant execute on function private.quitar_curso_asistencia_impl(uuid, uuid) to authenticated;
+grant execute on function private.registrar_escaneo_sala_impl(uuid, uuid) to authenticated;
+grant execute on function private.calcular_presencia_actividad_impl(uuid, uuid) to authenticated;
+grant execute on function private.mi_asistencia_evento_impl(uuid) to authenticated;
+grant execute on function private.reporte_asistencia_curso_impl(uuid, uuid) to authenticated;
 grant execute on function private.emitir_certificado_manual_impl(uuid, uuid, text, uuid, text) to authenticated;
 
 -- Verificación pública.
@@ -70,7 +80,12 @@ grant execute on function public.unirse_equipo(uuid) to authenticated;
 grant execute on function public.inscribir_equipo_actividad(uuid) to authenticated;
 grant execute on function public.obtener_o_crear_qr(uuid) to authenticated;
 grant execute on function public.regenerar_qr(uuid) to authenticated;
-grant execute on function public.registrar_escaneo_qr(uuid, uuid) to authenticated;
+grant execute on function public.agregar_mi_curso(uuid) to authenticated;
+grant execute on function public.seleccionar_curso_asistencia(uuid, uuid) to authenticated;
+grant execute on function public.quitar_curso_asistencia(uuid, uuid) to authenticated;
+grant execute on function public.registrar_escaneo_sala(uuid, uuid) to authenticated;
+grant execute on function public.mi_asistencia_evento(uuid) to authenticated;
+grant execute on function public.reporte_asistencia_curso(uuid, uuid) to authenticated;
 grant execute on function public.emitir_certificado_manual(uuid, uuid, text, uuid, text) to authenticated;
 grant execute on function public.verificar_certificado(text) to anon, authenticated;
 
@@ -79,7 +94,7 @@ grant execute on function public.verificar_certificado(text) to anon, authentica
 -- RLS sigue siendo la barrera que decide las filas permitidas.
 -- ============================================================
 
-grant select on public.eventos, public.actividades,
+grant select on public.eventos, public.salas, public.actividades,
     public.ponentes, public.actividad_ponentes
 to anon;
 
@@ -164,8 +179,64 @@ using (
     (select private.usuario_tiene_rol(array['admin']::text[]))
 );
 
+
 -- ============================================================
--- 6. ACTIVIDADES
+-- 6. SALAS
+-- ============================================================
+
+create policy "salas: anon ve activas de eventos reales publicados"
+on public.salas
+for select
+to anon
+using (
+    activo = true
+    and exists (
+        select 1
+        from public.eventos e
+        where e.id = salas.evento_id
+          and e.estado = 'publicado'
+          and e.es_prueba = false
+    )
+);
+
+create policy "salas: autenticado ve activas"
+on public.salas
+for select
+to authenticated
+using (
+    activo = true
+    or (select private.usuario_tiene_rol(array['admin']::text[]))
+);
+
+create policy "salas: admin inserta"
+on public.salas
+for insert
+to authenticated
+with check (
+    (select private.usuario_tiene_rol(array['admin']::text[]))
+);
+
+create policy "salas: admin actualiza"
+on public.salas
+for update
+to authenticated
+using (
+    (select private.usuario_tiene_rol(array['admin']::text[]))
+)
+with check (
+    (select private.usuario_tiene_rol(array['admin']::text[]))
+);
+
+create policy "salas: admin elimina"
+on public.salas
+for delete
+to authenticated
+using (
+    (select private.usuario_tiene_rol(array['admin']::text[]))
+);
+
+-- ============================================================
+-- 7. ACTIVIDADES
 -- ============================================================
 
 create policy "actividades: anon ve publicadas reales"
@@ -491,29 +562,28 @@ with check (
 );
 
 -- ============================================================
--- 13. ASISTENCIAS
--- El rol control registra por RPC; no necesita lectura masiva.
+-- 13. CURSOS
 -- ============================================================
 
-create policy "asistencia: usuario o admin lee"
-on public.asistencias
+create policy "cursos: autenticado ve activos"
+on public.cursos
 for select
 to authenticated
 using (
-    usuario_id = (select auth.uid())
+    activo = true
     or (select private.usuario_tiene_rol(array['admin']::text[]))
 );
 
-create policy "asistencia: admin inserta"
-on public.asistencias
+create policy "cursos: admin inserta"
+on public.cursos
 for insert
 to authenticated
 with check (
     (select private.usuario_tiene_rol(array['admin']::text[]))
 );
 
-create policy "asistencia: admin actualiza"
-on public.asistencias
+create policy "cursos: admin actualiza"
+on public.cursos
 for update
 to authenticated
 using (
@@ -523,8 +593,97 @@ with check (
     (select private.usuario_tiene_rol(array['admin']::text[]))
 );
 
-create policy "asistencia: admin elimina"
-on public.asistencias
+create policy "cursos: admin elimina"
+on public.cursos
+for delete
+to authenticated
+using (
+    (select private.usuario_tiene_rol(array['admin']::text[]))
+);
+
+-- ============================================================
+-- 14. PARTICIPANTES DE CURSOS
+-- ============================================================
+
+create policy "curso participantes: usuario o admin lee"
+on public.curso_participantes
+for select
+to authenticated
+using (
+    usuario_id = (select auth.uid())
+    or (select private.usuario_tiene_rol(array['admin']::text[]))
+);
+
+create policy "curso participantes: admin administra"
+on public.curso_participantes
+for all
+to authenticated
+using (
+    (select private.usuario_tiene_rol(array['admin']::text[]))
+)
+with check (
+    (select private.usuario_tiene_rol(array['admin']::text[]))
+);
+
+-- ============================================================
+-- 15. ASIGNACIONES DE ASISTENCIA A CURSOS
+-- ============================================================
+
+create policy "asignacion curso: usuario o admin lee"
+on public.asignaciones_asistencia_curso
+for select
+to authenticated
+using (
+    usuario_id = (select auth.uid())
+    or (select private.usuario_tiene_rol(array['admin']::text[]))
+);
+
+create policy "asignacion curso: admin administra"
+on public.asignaciones_asistencia_curso
+for all
+to authenticated
+using (
+    (select private.usuario_tiene_rol(array['admin']::text[]))
+)
+with check (
+    (select private.usuario_tiene_rol(array['admin']::text[]))
+);
+
+-- ============================================================
+-- 16. SESIONES DE PRESENCIA
+-- Control registra por RPC; el participante solo consulta las suyas.
+-- ============================================================
+
+create policy "sesion presencia: usuario o admin lee"
+on public.sesiones_presencia
+for select
+to authenticated
+using (
+    usuario_id = (select auth.uid())
+    or (select private.usuario_tiene_rol(array['admin']::text[]))
+);
+
+create policy "sesion presencia: admin inserta"
+on public.sesiones_presencia
+for insert
+to authenticated
+with check (
+    (select private.usuario_tiene_rol(array['admin']::text[]))
+);
+
+create policy "sesion presencia: admin actualiza"
+on public.sesiones_presencia
+for update
+to authenticated
+using (
+    (select private.usuario_tiene_rol(array['admin']::text[]))
+)
+with check (
+    (select private.usuario_tiene_rol(array['admin']::text[]))
+);
+
+create policy "sesion presencia: admin elimina"
+on public.sesiones_presencia
 for delete
 to authenticated
 using (

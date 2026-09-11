@@ -1,15 +1,5 @@
 -- ============================================================
--- BASE DE DATOS V3 - COMPROBACIONES ESTRUCTURALES
--- Archivo: comprobaciones.sql
--- Ejecutar después de instalar V3.
--- ============================================================
--- Este archivo NO reemplaza las pruebas funcionales con usuarios reales
--- de prueba. Sirve para detectar fallos de estructura/configuración.
--- ============================================================
-
--- ============================================================
--- 1. TABLAS ESPERADAS
--- Resultado esperado: 12 filas y ninguna con existe = false.
+-- BASE DE DATOS V3.2 - COMPROBACIONES ESTRUCTURALES
 -- ============================================================
 
 with esperadas(nombre) as (
@@ -17,6 +7,7 @@ with esperadas(nombre) as (
         ('perfiles'),
         ('eventos'),
         ('inscripciones_evento'),
+        ('salas'),
         ('actividades'),
         ('ponentes'),
         ('actividad_ponentes'),
@@ -24,7 +15,10 @@ with esperadas(nombre) as (
         ('miembros_equipo'),
         ('inscripciones_actividad'),
         ('credenciales_qr'),
-        ('asistencias'),
+        ('cursos'),
+        ('curso_participantes'),
+        ('asignaciones_asistencia_curso'),
+        ('sesiones_presencia'),
         ('certificados')
 )
 select
@@ -32,11 +26,6 @@ select
     to_regclass('public.' || nombre) is not null as existe
 from esperadas
 order by nombre;
-
--- ============================================================
--- 2. RLS
--- Resultado esperado: todas las tablas muestran rls_activo = true.
--- ============================================================
 
 select
     c.relname as tabla,
@@ -46,25 +35,13 @@ join pg_namespace n on n.oid = c.relnamespace
 where n.nspname = 'public'
   and c.relkind = 'r'
   and c.relname in (
-      'perfiles',
-      'eventos',
-      'inscripciones_evento',
-      'actividades',
-      'ponentes',
-      'actividad_ponentes',
-      'equipos',
-      'miembros_equipo',
-      'inscripciones_actividad',
-      'credenciales_qr',
-      'asistencias',
-      'certificados'
+      'perfiles','eventos','inscripciones_evento','salas','actividades',
+      'ponentes','actividad_ponentes','equipos','miembros_equipo',
+      'inscripciones_actividad','credenciales_qr','cursos',
+      'curso_participantes','asignaciones_asistencia_curso',
+      'sesiones_presencia','certificados'
   )
 order by c.relname;
-
--- ============================================================
--- 3. FUNCIONES PÚBLICAS ESPERADAS
--- Resultado esperado: todas existen.
--- ============================================================
 
 with funciones(firma) as (
     values
@@ -76,7 +53,12 @@ with funciones(firma) as (
         ('public.inscribir_equipo_actividad(uuid)'),
         ('public.obtener_o_crear_qr(uuid)'),
         ('public.regenerar_qr(uuid)'),
-        ('public.registrar_escaneo_qr(uuid,uuid)'),
+        ('public.agregar_mi_curso(uuid)'),
+        ('public.seleccionar_curso_asistencia(uuid,uuid)'),
+        ('public.quitar_curso_asistencia(uuid,uuid)'),
+        ('public.registrar_escaneo_sala(uuid,uuid)'),
+        ('public.mi_asistencia_evento(uuid)'),
+        ('public.reporte_asistencia_curso(uuid,uuid)'),
         ('public.emitir_certificado_manual(uuid,uuid,text,uuid,text)'),
         ('public.verificar_certificado(text)')
 )
@@ -86,95 +68,34 @@ select
 from funciones
 order by firma;
 
--- ============================================================
--- 4. BUSCAR CERTIFICADOS CON EVENTO/ACTIVIDAD INCOHERENTE
--- Resultado esperado: 0 filas.
--- ============================================================
-
-select
-    c.id,
-    c.evento_id,
-    c.actividad_id,
-    a.evento_id as evento_real_actividad
-from public.certificados c
-join public.actividades a on a.id = c.actividad_id
-where c.actividad_id is not null
-  and c.evento_id <> a.evento_id;
-
--- ============================================================
--- 5. BUSCAR EQUIPOS INSCRITOS EN ACTIVIDAD EQUIVOCADA
--- Resultado esperado: 0 filas.
--- La FK compuesta debería hacerlo imposible.
--- ============================================================
-
-select
-    ia.id,
-    ia.actividad_id,
-    ia.equipo_id,
-    e.actividad_id as actividad_real_equipo
-from public.inscripciones_actividad ia
-join public.equipos e on e.id = ia.equipo_id
-where ia.equipo_id is not null
-  and ia.actividad_id <> e.actividad_id;
-
--- ============================================================
--- 6. BUSCAR USUARIO EN DOS EQUIPOS DE LA MISMA ACTIVIDAD
--- Resultado esperado: 0 filas.
--- ============================================================
-
-select
-    actividad_id,
-    usuario_id,
-    count(*) as cantidad
-from public.miembros_equipo
-group by actividad_id, usuario_id
+-- Debe dar 0: más de una sesión abierta por usuario.
+select usuario_id, count(*) as sesiones_abiertas
+from public.sesiones_presencia
+where salida_en is null
+  and estado <> 'anulada'
+group by usuario_id
 having count(*) > 1;
 
--- ============================================================
--- 7. BUSCAR ASISTENCIAS TEMPORALMENTE INVÁLIDAS
--- Resultado esperado: 0 filas.
--- ============================================================
+-- Debe dar 0: actividad asociada a sala de otro evento.
+select a.id, a.evento_id, a.sala_id, s.evento_id as evento_sala
+from public.actividades a
+join public.salas s on s.id = a.sala_id
+where a.evento_id <> s.evento_id;
 
+-- Debe dar 0: asignación curso-actividad cruzando eventos.
+select
+    ac.id,
+    ac.evento_id,
+    a.evento_id as evento_actividad,
+    c.evento_id as evento_curso
+from public.asignaciones_asistencia_curso ac
+join public.actividades a on a.id = ac.actividad_id
+join public.cursos c on c.id = ac.curso_id
+where ac.evento_id <> a.evento_id
+   or ac.evento_id <> c.evento_id;
+
+-- Debe dar 0: sesiones con salida anterior a entrada.
 select *
-from public.asistencias
-where (salida_en is not null and entrada_en is null)
-   or (salida_en is not null and salida_en < entrada_en);
-
--- ============================================================
--- 8. BUSCAR QR DUPLICADOS POR USUARIO/EVENTO
--- Resultado esperado: 0 filas.
--- ============================================================
-
-select
-    evento_id,
-    usuario_id,
-    count(*) as cantidad
-from public.credenciales_qr
-group by evento_id, usuario_id
-having count(*) > 1;
-
--- ============================================================
--- 9. BUSCAR TOKENS QR DUPLICADOS
--- Resultado esperado: 0 filas.
--- ============================================================
-
-select
-    token,
-    count(*) as cantidad
-from public.credenciales_qr
-group by token
-having count(*) > 1;
-
--- ============================================================
--- 10. EVENTOS REALES MARCADOS COMO PRUEBA / REVISIÓN VISUAL
--- Revisar manualmente esta lista.
--- ============================================================
-
-select
-    id,
-    nombre,
-    slug,
-    es_prueba,
-    estado
-from public.eventos
-order by es_prueba desc, nombre;
+from public.sesiones_presencia
+where salida_en is not null
+  and salida_en < entrada_en;

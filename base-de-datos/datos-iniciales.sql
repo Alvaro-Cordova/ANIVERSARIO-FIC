@@ -186,3 +186,50 @@ values (
 -- Nunca colocar aquí:
 -- contraseñas, claves Supabase, service_role, DNI masivos,
 -- asistencias reales ni certificados reales.
+
+
+-- ============================================================
+-- V3.2 - SALAS REALES
+-- ============================================================
+/*
+insert into public.salas (
+    evento_id, nombre, ubicacion, activo
+)
+values (
+    'UUID-DEL-EVENTO',
+    'Auditorio Principal',
+    'Primer piso',
+    true
+);
+*/
+
+-- ============================================================
+-- V3.2 - CURSOS REALES
+-- No se relacionan por tema con las ponencias.
+-- Cualquier alumno del curso puede asignar cualquier ponencia con
+-- asistencia a ese curso.
+-- ============================================================
+/*
+insert into public.cursos (
+    evento_id,
+    codigo,
+    nombre,
+    docente,
+    seccion,
+    ciclo,
+    porcentaje_minimo_asistencia,
+    permite_autoinscripcion,
+    activo
+)
+values (
+    'UUID-DEL-EVENTO',
+    'CODIGO',
+    'NOMBRE DEL CURSO',
+    'NOMBRE DEL DOCENTE',
+    'SECCION',
+    '2026-II',
+    70,
+    true,
+    true
+);
+*/

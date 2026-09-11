@@ -1,95 +1,91 @@
 -- ============================================================
--- BASE DE DATOS V3 - DATOS DE PRUEBA
--- Archivo: datos-prueba.sql
--- Ejecutar SOLO después de esquema.sql + funciones.sql + permisos.sql.
--- ============================================================
--- No crea usuarios. Las cuentas de prueba deben crearse con Supabase Auth.
--- Los eventos ficticios tienen es_prueba = true y NO se muestran a anon.
--- ============================================================
-
--- ============================================================
--- 1. EVENTO GRATUITO DE PRUEBA
+-- BASE DE DATOS V3.2 - DATOS DE PRUEBA
+-- Ejecutar después de esquema.sql + funciones.sql + permisos.sql.
+-- NO crea usuarios de Auth.
 -- ============================================================
 
 insert into public.eventos (
-    id,
-    nombre,
-    slug,
-    descripcion,
-    fecha_inicio,
-    fecha_fin,
-    lugar,
-    estado,
-    es_prueba,
-    inscripciones_abiertas,
-    requiere_pago,
-    porcentaje_minimo_certificado
+    id, nombre, slug, descripcion,
+    fecha_inicio, fecha_fin, lugar,
+    estado, es_prueba, inscripciones_abiertas,
+    requiere_pago, porcentaje_minimo_certificado
 )
-values (
+values
+(
     '10000000-0000-0000-0000-000000000001',
     'EVENTO GRATUITO DE PRUEBA',
     'evento-gratuito-prueba',
-    'Evento ficticio para probar registro, actividades, QR y asistencia.',
-    '2026-09-20 08:00:00-05',
-    '2026-09-20 20:00:00-05',
+    'Evento ficticio para probar registro, cursos, QR y presencia.',
+    now() - interval '2 hours',
+    now() + interval '8 hours',
     'Lugar de prueba',
-    'publicado',
-    true,
-    true,
-    false,
-    70
-)
-on conflict (id) do nothing;
-
--- ============================================================
--- 2. EVENTO CON PAGO DE PRUEBA
--- ============================================================
-
-insert into public.eventos (
-    id,
-    nombre,
-    slug,
-    descripcion,
-    fecha_inicio,
-    fecha_fin,
-    lugar,
-    estado,
-    es_prueba,
-    inscripciones_abiertas,
-    requiere_pago,
-    enlace_pago,
-    enlace_formulario_pago,
-    porcentaje_minimo_certificado
-)
-values (
+    'publicado', true, true, false, 70
+),
+(
     '10000000-0000-0000-0000-000000000002',
     'EVENTO CON PAGO DE PRUEBA',
     'evento-pago-prueba',
-    'Evento ficticio para verificar el flujo de pago manual.',
-    '2026-09-20 08:00:00-05',
-    '2026-09-20 20:00:00-05',
+    'Evento ficticio para probar pago manual.',
+    now() - interval '2 hours',
+    now() + interval '8 hours',
     'Lugar de prueba',
-    'publicado',
-    true,
-    true,
-    true,
-    'https://ejemplo.invalid/pago',
-    'https://ejemplo.invalid/formulario',
-    70
+    'publicado', true, true, true, 70
 )
 on conflict (id) do nothing;
 
--- ============================================================
--- 3. PONENTE FICTICIO
--- ============================================================
+insert into public.salas (
+    id, evento_id, nombre, ubicacion, activo
+)
+values
+(
+    '11000000-0000-0000-0000-000000000001',
+    '10000000-0000-0000-0000-000000000001',
+    'Auditorio de prueba',
+    'Primer piso',
+    true
+),
+(
+    '11000000-0000-0000-0000-000000000002',
+    '10000000-0000-0000-0000-000000000001',
+    'Sala secundaria de prueba',
+    'Segundo piso',
+    true
+)
+on conflict (id) do nothing;
+
+insert into public.cursos (
+    id, evento_id, codigo, nombre, docente, seccion, ciclo,
+    porcentaje_minimo_asistencia, permite_autoinscripcion, activo
+)
+values
+(
+    '12000000-0000-0000-0000-000000000001',
+    '10000000-0000-0000-0000-000000000001',
+    'MS-PRUEBA',
+    'Mecánica de Suelos - Prueba',
+    'Docente de prueba',
+    'A',
+    '2026-II',
+    70,
+    true,
+    true
+),
+(
+    '12000000-0000-0000-0000-000000000002',
+    '10000000-0000-0000-0000-000000000001',
+    'DV-PRUEBA',
+    'Diseño Vial - Prueba',
+    'Docente de prueba',
+    'A',
+    '2026-II',
+    80,
+    true,
+    true
+)
+on conflict (id) do nothing;
 
 insert into public.ponentes (
-    id,
-    nombres,
-    apellidos,
-    cargo,
-    institucion,
-    biografia
+    id, nombres, apellidos, cargo, institucion, biografia
 )
 values (
     '20000000-0000-0000-0000-000000000001',
@@ -101,126 +97,55 @@ values (
 )
 on conflict (id) do nothing;
 
--- ============================================================
--- 4. PONENCIA INDIVIDUAL
--- ============================================================
-
 insert into public.actividades (
-    id,
-    evento_id,
-    tipo,
-    titulo,
-    descripcion,
-    fecha_inicio,
-    fecha_fin,
-    lugar,
-    capacidad,
-    requiere_inscripcion,
-    inscripciones_abiertas,
-    modalidad_inscripcion,
-    cuenta_para_certificado,
-    estado
+    id, evento_id, tipo, titulo, descripcion,
+    fecha_inicio, fecha_fin, lugar, sala_id, controla_asistencia,
+    capacidad, requiere_inscripcion, inscripciones_abiertas,
+    modalidad_inscripcion, cuenta_para_certificado, estado
 )
-values (
+values
+(
     '30000000-0000-0000-0000-000000000001',
     '10000000-0000-0000-0000-000000000001',
     'ponencia',
     'Ponencia interna de prueba',
-    'Sirve para probar inscripción, QR, asistencia y certificados.',
-    '2026-09-20 09:00:00-05',
-    '2026-09-20 10:30:00-05',
+    'Prueba de presencia automática por sala.',
+    now() - interval '10 minutes',
+    now() + interval '50 minutes',
     'Auditorio de prueba',
-    100,
+    '11000000-0000-0000-0000-000000000001',
     true,
-    true,
-    'individual',
-    true,
-    'publicado'
-)
-on conflict (id) do nothing;
-
--- ============================================================
--- 5. CONCURSO POR EQUIPO
--- ============================================================
-
-insert into public.actividades (
-    id,
-    evento_id,
-    tipo,
-    titulo,
-    descripcion,
-    fecha_inicio,
-    fecha_fin,
-    lugar,
-    capacidad,
-    requiere_inscripcion,
-    inscripciones_abiertas,
-    modalidad_inscripcion,
-    minimo_integrantes_equipo,
-    maximo_integrantes_equipo,
-    cuenta_para_certificado,
-    estado
-)
-values (
+    100, true, true, 'individual', true, 'publicado'
+),
+(
     '30000000-0000-0000-0000-000000000002',
     '10000000-0000-0000-0000-000000000001',
     'concurso',
     'Concurso interno por equipos',
-    'Sirve para probar creación, invitación e inscripción de equipos.',
-    '2026-09-20 11:00:00-05',
-    '2026-09-20 13:00:00-05',
+    'Prueba de creación e inscripción de equipos.',
+    now() + interval '1 hour',
+    now() + interval '3 hours',
     'Zona de prueba',
-    20,
-    true,
-    true,
-    'equipo',
-    2,
-    4,
+    null,
     false,
-    'publicado'
-)
-on conflict (id) do nothing;
-
--- ============================================================
--- 6. ACTIVIDAD QUE NO REQUIERE INSCRIPCIÓN
--- ============================================================
-
-insert into public.actividades (
-    id,
-    evento_id,
-    tipo,
-    titulo,
-    descripcion,
-    fecha_inicio,
-    fecha_fin,
-    lugar,
-    requiere_inscripcion,
-    inscripciones_abiertas,
-    modalidad_inscripcion,
-    cuenta_para_certificado,
-    estado
-)
-values (
+    20, true, true, 'equipo', false, 'publicado'
+),
+(
     '30000000-0000-0000-0000-000000000003',
     '10000000-0000-0000-0000-000000000001',
-    'ceremonia',
-    'Ceremonia abierta de prueba',
-    'Permite comprobar asistencia sin inscripción específica a la actividad.',
-    '2026-09-20 15:00:00-05',
-    '2026-09-20 16:00:00-05',
-    'Patio de prueba',
-    false,
-    false,
-    'individual',
-    false,
-    'publicado'
+    'ponencia',
+    'Segunda ponencia interna de prueba',
+    'Sirve para probar cambio automático de ponencia sin escaneo.',
+    now() + interval '50 minutes',
+    now() + interval '1 hour 50 minutes',
+    'Auditorio de prueba',
+    '11000000-0000-0000-0000-000000000001',
+    true,
+    null, false, false, 'individual', true, 'publicado'
 )
 on conflict (id) do nothing;
 
-insert into public.actividad_ponentes (
-    actividad_id,
-    ponente_id
-)
+insert into public.actividad_ponentes (actividad_id, ponente_id)
 values (
     '30000000-0000-0000-0000-000000000001',
     '20000000-0000-0000-0000-000000000001'

@@ -1,58 +1,77 @@
-# BASE DE DATOS V3.1 — CANDIDATA PARA PRUEBAS
+# BASE DE DATOS V3.2 — CANDIDATA PARA PRUEBAS
 
-Esta carpeta reemplaza la V2.
+## Si instalas desde cero
 
-## Orden de instalación
-
-En un proyecto nuevo de Supabase:
+Ejecutar:
 
 ```text
 1. esquema.sql
 2. funciones.sql
 3. permisos.sql
-4. comprobaciones.sql
-5. datos-prueba.sql        (opcional)
-6. datos-iniciales.sql     (cuando haya información real confirmada)
+4. datos-prueba.sql
+5. comprobaciones.sql
 ```
 
-## Importante
+Después de crear usuarios de Auth:
 
-No cargar V2 y después V3 sobre la misma base esperando que `CREATE TABLE`
-actualice automáticamente las tablas.
+```text
+preparar-usuarios-prueba-cursos.sql
+```
 
-La V3 fue preparada para instalarse inicialmente sobre una base nueva.
+## Si YA tienes V3.1 en Supabase
 
-## Archivos
+Tu caso actual.
 
-- `AUDITORIA_V2.md`: errores y mejoras encontrados.
-- `esquema.sql`: tablas, relaciones, restricciones y triggers.
-- `funciones.sql`: lógica segura de inscripciones, equipos, QR, asistencia y certificados.
-- `permisos.sql`: RLS y permisos.
-- `datos-prueba.sql`: datos ficticios aislados.
-- `datos-iniciales.sql`: plantilla para datos reales.
-- `comprobaciones.sql`: consultas de revisión estructural.
-- `PLAN_PRUEBAS_V3.md`: pruebas funcionales y de seguridad.
-- `limpiar-datos-prueba.sql`: eliminación de datos ficticios cuando ya no se necesiten.
+NO ejecutes el esquema completo otra vez.
+
+Ejecuta:
+
+```text
+1. MIGRACION_V3_1_A_V3_2.sql
+2. funciones-v3_2-migracion.sql
+3. permisos-v3_2-migracion.sql
+4. adaptar-datos-prueba-v3_2.sql
+5. comprobaciones.sql
+```
+
+## Idea de V3.2
+
+```text
+QR
+↓
+presencia por SALA
+↓
+múltiples entradas/salidas
+↓
+cruce automático con horarios de ponencias
+↓
+porcentaje real de presencia
+```
+
+El usuario puede asignar cualquier ponencia con asistencia a cualquiera de sus
+cursos. No existe una relación temática obligatoria entre ponencia y curso.
+
+## Excel
+
+La base entrega el reporte estructurado mediante:
+
+```text
+reporte_asistencia_curso()
+```
+
+El módulo `reportes` convertirá esas filas a XLSX/CSV. La base de datos no
+necesita almacenar archivos Excel.
 
 ## Estado
 
 ```text
-V3 = CANDIDATA PARA PRUEBAS
+V3.2 = CANDIDATA PARA PRUEBAS
 ```
 
-Todavía no debe llamarse “versión estable” hasta ejecutarla en Supabase y
-completar el plan de pruebas.
 
+## Importante para el proyecto DEV actual
 
-## Dos reglas adicionales
-
-1. **No agregar el schema `private` a los schemas expuestos de la API de Supabase.**
-   Las funciones internas privilegiadas se guardan ahí intencionalmente.
-
-2. **No borrar usuarios reales para “desactivarlos”.**
-   Utilizar `perfiles.activo = false`. El borrado de una cuenta de Auth puede
-   eliminar datos operativos dependientes por cascada; la desactivación
-   conserva el historial.
-
-
-Ver `CAMBIOS_V3_1.md` para los ajustes previos a la instalación en Supabase.
+La migración elimina `public.asistencias` de V3.1 porque ese modelo ya no se usa.
+En este momento esa tabla contiene únicamente las asistencias ficticias creadas
+durante las pruebas. No ejecutar esta migración sobre datos reales sin una
+migración histórica específica.

@@ -340,3 +340,11 @@ feature/certificados
 feature/administracion
 
 Antes de integrar cambios se debe comprobar que el módulo funciona.
+
+
+e53d10a4-1d31-4246-a7d1-0b318c8f1037
+d9fbb4b0-a19d-474d-91f6-dcf7c51793d7
+
+qr
+
+e3b2cf9a-66cf-4345-9c83-a7fa07a7fa0a

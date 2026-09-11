@@ -144,7 +144,31 @@ create table public.inscripciones_evento (
 );
 
 -- ============================================================
--- 4. ACTIVIDADES
+-- 4. SALAS
+-- La asistencia física se controla por sala, no por ponencia.
+-- ============================================================
+
+create table public.salas (
+    id uuid primary key default gen_random_uuid(),
+    evento_id uuid not null references public.eventos(id) on delete cascade,
+    nombre text not null,
+    ubicacion text,
+    activo boolean not null default true,
+    creado_en timestamptz not null default now(),
+    actualizado_en timestamptz not null default now(),
+
+    check (trim(nombre) <> ''),
+    unique (id, evento_id)
+);
+
+create unique index uq_salas_evento_nombre
+on public.salas(evento_id, lower(trim(nombre)));
+
+create index idx_salas_evento
+on public.salas(evento_id);
+
+-- ============================================================
+-- 5. ACTIVIDADES
 -- Una tabla para ponencias, concursos, talleres, ceremonias, etc.
 -- ============================================================
 
@@ -162,7 +186,13 @@ create table public.actividades (
 
     fecha_inicio timestamptz,
     fecha_fin timestamptz,
+
+    -- "lugar" permanece para texto libre visible.
     lugar text,
+
+    -- sala_id permite calcular presencia automáticamente.
+    sala_id uuid,
+    controla_asistencia boolean not null default false,
 
     -- Número máximo de INSCRIPCIONES.
     -- Individual = una persona ocupa un cupo.
@@ -198,7 +228,6 @@ create table public.actividades (
         or inscripcion_fin >= inscripcion_inicio
     ),
 
-    -- Si la modalidad acepta equipos, el mínimo y máximo son obligatorios.
     check (
         (
             modalidad_inscripcion = 'individual'
@@ -215,13 +244,31 @@ create table public.actividades (
         )
     ),
 
-    -- Una actividad publicada debe tener por lo menos fecha de inicio.
-    check (estado <> 'publicado' or fecha_inicio is not null)
+    -- Una actividad publicada debe tener fecha de inicio.
+    check (estado <> 'publicado' or fecha_inicio is not null),
+
+    -- Si controla asistencia automática, debe tener sala y rango horario completo.
+    check (
+        controla_asistencia = false
+        or (
+            sala_id is not null
+            and fecha_inicio is not null
+            and fecha_fin is not null
+        )
+    ),
+
+    unique (id, evento_id),
+
+    -- Impide asociar una sala perteneciente a otro evento.
+    foreign key (sala_id, evento_id)
+        references public.salas(id, evento_id)
+        on delete restrict
 );
 
 create index idx_actividades_evento on public.actividades(evento_id);
 create index idx_actividades_tipo on public.actividades(tipo);
 create index idx_actividades_fecha on public.actividades(fecha_inicio);
+create index idx_actividades_sala on public.actividades(sala_id);
 
 -- ============================================================
 -- 5. PONENTES
@@ -380,38 +427,154 @@ create table public.credenciales_qr (
 create index idx_qr_usuario on public.credenciales_qr(usuario_id);
 
 -- ============================================================
--- 9. ASISTENCIAS
--- Una fila por usuario + actividad.
+-- 9. CURSOS ACADÉMICOS
+-- No existe relación fija "ponencia -> curso".
+-- El usuario puede asignar CUALQUIER actividad con asistencia a uno o
+-- varios de sus cursos, sin importar el tema de la ponencia.
 -- ============================================================
 
-create table public.asistencias (
+create table public.cursos (
     id uuid primary key default gen_random_uuid(),
+    evento_id uuid not null references public.eventos(id) on delete cascade,
 
-    actividad_id uuid not null references public.actividades(id) on delete cascade,
+    codigo text,
+    nombre text not null,
+    docente text,
+    seccion text,
+    ciclo text,
+
+    porcentaje_minimo_asistencia numeric(5,2) not null default 70
+        check (porcentaje_minimo_asistencia between 0 and 100),
+
+    permite_autoinscripcion boolean not null default true,
+    activo boolean not null default true,
+
+    creado_en timestamptz not null default now(),
+    actualizado_en timestamptz not null default now(),
+
+    check (trim(nombre) <> ''),
+    unique (id, evento_id)
+);
+
+create unique index uq_cursos_evento_nombre_seccion
+on public.cursos (
+    evento_id,
+    lower(trim(nombre)),
+    lower(trim(coalesce(seccion, '')))
+);
+
+create index idx_cursos_evento
+on public.cursos(evento_id);
+
+-- Los alumnos indican los cursos que llevan.
+-- Esto permite que el reporte incluya también a quienes NO registraron
+-- una ponencia para ese curso.
+create table public.curso_participantes (
+    curso_id uuid not null references public.cursos(id) on delete cascade,
     usuario_id uuid not null references public.perfiles(id) on delete cascade,
 
-    entrada_en timestamptz,
+    estado text not null default 'activo'
+        check (estado in ('activo', 'retirado')),
+
+    origen text not null default 'usuario'
+        check (origen in ('usuario', 'admin', 'importado')),
+
+    inscrito_en timestamptz not null default now(),
+    actualizado_en timestamptz not null default now(),
+
+    primary key (curso_id, usuario_id)
+);
+
+create index idx_curso_participantes_usuario
+on public.curso_participantes(usuario_id);
+
+-- El usuario decide para qué curso(s) desea usar una ponencia.
+-- La misma ponencia puede contar para varios cursos del mismo usuario.
+create table public.asignaciones_asistencia_curso (
+    id uuid primary key default gen_random_uuid(),
+
+    evento_id uuid not null,
+    actividad_id uuid not null,
+    curso_id uuid not null,
+    usuario_id uuid not null,
+
+    estado text not null default 'seleccionado'
+        check (estado in ('seleccionado', 'retirado')),
+
+    seleccionado_en timestamptz not null default now(),
+    actualizado_en timestamptz not null default now(),
+
+    foreign key (actividad_id, evento_id)
+        references public.actividades(id, evento_id)
+        on delete cascade,
+
+    foreign key (curso_id, evento_id)
+        references public.cursos(id, evento_id)
+        on delete cascade,
+
+    foreign key (curso_id, usuario_id)
+        references public.curso_participantes(curso_id, usuario_id)
+        on delete cascade,
+
+    unique (usuario_id, actividad_id, curso_id)
+);
+
+create index idx_asignaciones_curso
+on public.asignaciones_asistencia_curso(curso_id);
+
+create index idx_asignaciones_actividad
+on public.asignaciones_asistencia_curso(actividad_id);
+
+create index idx_asignaciones_usuario
+on public.asignaciones_asistencia_curso(usuario_id);
+
+-- ============================================================
+-- 10. SESIONES DE PRESENCIA
+-- Un usuario puede entrar y salir varias veces de una sala.
+-- Ejemplo: mañana -> almuerzo -> tarde.
+-- ============================================================
+
+create table public.sesiones_presencia (
+    id uuid primary key default gen_random_uuid(),
+
+    evento_id uuid not null,
+    sala_id uuid not null,
+    usuario_id uuid not null references public.perfiles(id) on delete cascade,
+
+    entrada_en timestamptz not null,
     salida_en timestamptz,
 
     entrada_registrada_por uuid references public.perfiles(id) on delete set null,
     salida_registrada_por uuid references public.perfiles(id) on delete set null,
 
     estado text not null default 'registrada'
-        check (estado in ('registrada', 'validada', 'observada')),
+        check (estado in ('registrada', 'observada', 'anulada')),
 
     observacion text,
 
     creado_en timestamptz not null default now(),
     actualizado_en timestamptz not null default now(),
 
-    unique (actividad_id, usuario_id),
+    foreign key (sala_id, evento_id)
+        references public.salas(id, evento_id)
+        on delete cascade,
 
-    check (entrada_en is not null or salida_en is null),
     check (salida_en is null or salida_en >= entrada_en)
 );
 
-create index idx_asistencias_usuario on public.asistencias(usuario_id);
-create index idx_asistencias_actividad on public.asistencias(actividad_id);
+-- Una persona no puede estar "abierta" simultáneamente en dos salas.
+create unique index uq_sesion_abierta_usuario
+on public.sesiones_presencia(usuario_id)
+where salida_en is null and estado <> 'anulada';
+
+create index idx_sesiones_presencia_usuario
+on public.sesiones_presencia(usuario_id);
+
+create index idx_sesiones_presencia_sala
+on public.sesiones_presencia(sala_id);
+
+create index idx_sesiones_presencia_evento
+on public.sesiones_presencia(evento_id);
 
 -- ============================================================
 -- 10. CERTIFICADOS
@@ -502,6 +665,10 @@ create trigger trg_inscripciones_evento_actualizado
 before update on public.inscripciones_evento
 for each row execute function private.actualizar_fecha_modificacion();
 
+create trigger trg_salas_actualizado
+before update on public.salas
+for each row execute function private.actualizar_fecha_modificacion();
+
 create trigger trg_actividades_actualizado
 before update on public.actividades
 for each row execute function private.actualizar_fecha_modificacion();
@@ -522,8 +689,20 @@ create trigger trg_qr_actualizado
 before update on public.credenciales_qr
 for each row execute function private.actualizar_fecha_modificacion();
 
-create trigger trg_asistencias_actualizado
-before update on public.asistencias
+create trigger trg_cursos_actualizado
+before update on public.cursos
+for each row execute function private.actualizar_fecha_modificacion();
+
+create trigger trg_curso_participantes_actualizado
+before update on public.curso_participantes
+for each row execute function private.actualizar_fecha_modificacion();
+
+create trigger trg_asignaciones_asistencia_curso_actualizado
+before update on public.asignaciones_asistencia_curso
+for each row execute function private.actualizar_fecha_modificacion();
+
+create trigger trg_sesiones_presencia_actualizado
+before update on public.sesiones_presencia
 for each row execute function private.actualizar_fecha_modificacion();
 
 -- ============================================================
