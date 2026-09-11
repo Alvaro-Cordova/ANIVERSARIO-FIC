@@ -43,6 +43,7 @@ grant usage on schema private to anon, authenticated;
 
 -- Helpers necesarios para políticas.
 grant execute on function private.usuario_tiene_rol(text[]) to authenticated;
+grant execute on function private.usuario_esta_activo() to authenticated;
 grant execute on function private.usuario_pertenece_equipo(uuid) to authenticated;
 
 -- Implementaciones privadas invocadas por wrappers autenticados.

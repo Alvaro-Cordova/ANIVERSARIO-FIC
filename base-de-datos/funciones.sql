@@ -24,6 +24,21 @@ as $$
     );
 $$;
 
+create or replace function private.usuario_esta_activo()
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+    select exists (
+        select 1
+        from public.perfiles p
+        where p.id = (select auth.uid())
+          and p.activo = true
+    );
+$$;
+
 create or replace function private.usuario_pertenece_equipo(p_equipo_id uuid)
 returns boolean
 language sql
@@ -95,6 +110,10 @@ begin
         raise exception 'Debes iniciar sesión.';
     end if;
 
+    if not private.usuario_esta_activo() then
+        raise exception 'Tu cuenta está desactivada.';
+    end if;
+
     select e.*
     into v_evento
     from public.eventos e
@@ -154,6 +173,21 @@ begin
             when public.inscripciones_evento.estado = 'cancelado'
                 then excluded.estado_pago
             else public.inscripciones_evento.estado_pago
+        end,
+        referencia_pago = case
+            when public.inscripciones_evento.estado = 'cancelado'
+                then null
+            else public.inscripciones_evento.referencia_pago
+        end,
+        pago_verificado_por = case
+            when public.inscripciones_evento.estado = 'cancelado'
+                then null
+            else public.inscripciones_evento.pago_verificado_por
+        end,
+        pago_verificado_en = case
+            when public.inscripciones_evento.estado = 'cancelado'
+                then null
+            else public.inscripciones_evento.pago_verificado_en
         end,
         actualizado_en = now()
     returning estado, estado_pago
@@ -264,6 +298,10 @@ declare
 begin
     if v_usuario is null then
         raise exception 'Debes iniciar sesión.';
+    end if;
+
+    if not private.usuario_esta_activo() then
+        raise exception 'Tu cuenta está desactivada.';
     end if;
 
     select a.*
@@ -390,6 +428,10 @@ declare
 begin
     if v_usuario is null then
         raise exception 'Debes iniciar sesión.';
+    end if;
+
+    if not private.usuario_esta_activo() then
+        raise exception 'Tu cuenta está desactivada.';
     end if;
 
     if nullif(trim(p_nombre), '') is null then
@@ -523,6 +565,10 @@ begin
         raise exception 'Debes iniciar sesión.';
     end if;
 
+    if not private.usuario_esta_activo() then
+        raise exception 'Tu cuenta está desactivada.';
+    end if;
+
     select eq.*
     into v_equipo
     from public.equipos eq
@@ -645,6 +691,10 @@ declare
 begin
     if v_usuario is null then
         raise exception 'Debes iniciar sesión.';
+    end if;
+
+    if not private.usuario_esta_activo() then
+        raise exception 'Tu cuenta está desactivada.';
     end if;
 
     select eq.*
@@ -809,12 +859,18 @@ begin
         raise exception 'Debes iniciar sesión.';
     end if;
 
+    if not private.usuario_esta_activo() then
+        raise exception 'Tu cuenta está desactivada.';
+    end if;
+
     if not exists (
         select 1
         from public.inscripciones_evento ie
+        join public.eventos e on e.id = ie.evento_id
         where ie.evento_id = p_evento_id
           and ie.usuario_id = v_usuario
           and ie.estado = 'inscrito'
+          and e.estado = 'publicado'
     ) then
         raise exception 'Tu inscripción al evento todavía no está habilitada.';
     end if;
@@ -871,12 +927,18 @@ begin
         raise exception 'Debes iniciar sesión.';
     end if;
 
+    if not private.usuario_esta_activo() then
+        raise exception 'Tu cuenta está desactivada.';
+    end if;
+
     if not exists (
         select 1
         from public.inscripciones_evento ie
+        join public.eventos e on e.id = ie.evento_id
         where ie.evento_id = p_evento_id
           and ie.usuario_id = v_usuario
           and ie.estado = 'inscrito'
+          and e.estado = 'publicado'
     ) then
         raise exception 'Tu inscripción al evento no está habilitada.';
     end if;
@@ -967,12 +1029,30 @@ begin
         raise exception 'La actividad no existe.';
     end if;
 
-    if v_actividad.estado = 'cancelado' then
-        raise exception 'La actividad está cancelada.';
+    if v_actividad.estado <> 'publicado' then
+        raise exception 'La actividad no está habilitada para registrar asistencia.';
     end if;
 
     if v_actividad.evento_id <> v_evento_qr then
         raise exception 'El QR no corresponde al evento de esta actividad.';
+    end if;
+
+    if not exists (
+        select 1
+        from public.perfiles p
+        where p.id = v_usuario
+          and p.activo = true
+    ) then
+        raise exception 'La cuenta del participante está desactivada.';
+    end if;
+
+    if not exists (
+        select 1
+        from public.eventos e
+        where e.id = v_actividad.evento_id
+          and e.estado = 'publicado'
+    ) then
+        raise exception 'El evento no está habilitado para registrar asistencia.';
     end if;
 
     if not exists (

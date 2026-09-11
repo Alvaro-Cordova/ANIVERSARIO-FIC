@@ -504,3 +504,66 @@ V3 candidata
 → V3.1
 → repetir pruebas afectadas
 ```
+
+
+---
+
+# Pruebas adicionales V3.1
+
+## Cuenta desactivada
+
+Marcar un participante:
+
+```text
+activo = false
+```
+
+Debe fallar al intentar:
+
+```text
+inscribirse_evento()
+inscribirse_actividad()
+crear_equipo()
+unirse_equipo()
+obtener_o_crear_qr()
+regenerar_qr()
+```
+
+Un QR emitido antes de la desactivación también debe ser rechazado por
+`registrar_escaneo_qr()`.
+
+## Equipo cancelado
+
+Crear un equipo con dos miembros y luego, como administrador:
+
+```text
+estado = cancelado
+```
+
+Resultado esperado:
+
+```text
+inscripción del equipo = cancelado
+miembros_equipo del equipo = 0
+```
+
+Los antiguos integrantes deben poder crear o unirse a otro equipo de la misma
+actividad.
+
+## Reinscripción después de cancelación
+
+Cancelar una inscripción general de un evento con pago y volver a ejecutar:
+
+```text
+inscribirse_evento()
+```
+
+Resultado esperado:
+
+```text
+estado = pendiente
+estado_pago = pendiente
+referencia_pago = null
+pago_verificado_por = null
+pago_verificado_en = null
+```

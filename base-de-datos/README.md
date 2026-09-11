@@ -1,4 +1,4 @@
-# BASE DE DATOS V3 — CANDIDATA PARA PRUEBAS
+# BASE DE DATOS V3.1 — CANDIDATA PARA PRUEBAS
 
 Esta carpeta reemplaza la V2.
 
@@ -53,3 +53,6 @@ completar el plan de pruebas.
    Utilizar `perfiles.activo = false`. El borrado de una cuenta de Auth puede
    eliminar datos operativos dependientes por cascada; la desactivación
    conserva el historial.
+
+
+Ver `CAMBIOS_V3_1.md` para los ajustes previos a la instalación en Supabase.

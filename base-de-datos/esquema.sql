@@ -657,3 +657,39 @@ create trigger trg_validar_certificado_evento
 before insert or update of evento_id, actividad_id
 on public.certificados
 for each row execute function private.validar_certificado_evento();
+
+
+-- ============================================================
+-- 16. CANCELACIÓN DE EQUIPOS
+-- Si un equipo se cancela, su inscripción se marca como cancelada y
+-- se liberan sus miembros para que puedan formar/unirse a otro equipo.
+-- Se conserva la fila del equipo como referencia administrativa.
+-- ============================================================
+
+create or replace function private.procesar_cancelacion_equipo()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+    if old.estado is distinct from new.estado
+       and new.estado = 'cancelado' then
+
+        update public.inscripciones_actividad
+        set estado = 'cancelado',
+            actualizado_en = now()
+        where equipo_id = new.id
+          and estado <> 'cancelado';
+
+        delete from public.miembros_equipo
+        where equipo_id = new.id;
+    end if;
+
+    return new;
+end;
+$$;
+
+create trigger trg_procesar_cancelacion_equipo
+after update of estado on public.equipos
+for each row execute function private.procesar_cancelacion_equipo();
