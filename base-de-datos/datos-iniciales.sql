@@ -1,26 +1,17 @@
 -- ============================================================
--- DATOS INICIALES REALES
+-- BASE DE DATOS V3 - DATOS INICIALES REALES
 -- Archivo: datos-iniciales.sql
 -- ============================================================
--- IMPORTANTE:
--- Este archivo NO inserta información inventada.
--- Debe completarse únicamente con datos OFICIALES confirmados
--- por las gerencias correspondientes.
+-- Este archivo es una PLANTILLA.
+-- No contiene nombres, fechas, ponentes ni concursos inventados.
+-- Completar únicamente con información OFICIAL confirmada.
 --
--- Recomendación:
--- 1. Completar la sección EVENTO.
--- 2. Completar PONENTES confirmados.
--- 3. Completar ACTIVIDADES confirmadas.
--- 4. Ejecutar recién cuando la información sea oficial.
---
--- Los participantes reales NO se colocan aquí.
--- Ellos crearán sus cuentas mediante el módulo de registro.
+-- Los usuarios/participantes reales NO se insertan aquí.
+-- Ellos se registran mediante Supabase Auth.
 -- ============================================================
-
 
 -- ============================================================
 -- 1. EVENTO REAL
--- Descomentar y reemplazar los valores cuando sean oficiales.
 -- ============================================================
 
 /*
@@ -34,21 +25,27 @@ insert into public.eventos (
     direccion,
     estado,
     es_prueba,
+    inscripciones_abiertas,
+    inscripcion_inicio,
+    inscripcion_fin,
     requiere_pago,
     enlace_pago,
     enlace_formulario_pago,
     porcentaje_minimo_certificado
 )
 values (
-    'NOMBRE OFICIAL DEL EVENTO',
-    'slug-del-evento',
+    'NOMBRE OFICIAL',
+    'slug-oficial-en-minusculas',
     'DESCRIPCIÓN OFICIAL',
     'AAAA-MM-DD HH:MM:SS-05',
     'AAAA-MM-DD HH:MM:SS-05',
-    'LUGAR OFICIAL',
-    'DIRECCIÓN OFICIAL',
+    'LUGAR',
+    'DIRECCIÓN',
     'publicado',
     false,
+    true,
+    'AAAA-MM-DD HH:MM:SS-05',
+    'AAAA-MM-DD HH:MM:SS-05',
     false,
     null,
     null,
@@ -56,10 +53,8 @@ values (
 );
 */
 
-
 -- ============================================================
--- 2. PONENTES REALES
--- Agregar únicamente cuando la Gerencia de Ponencias confirme.
+-- 2. PONENTES
 -- ============================================================
 
 /*
@@ -77,15 +72,13 @@ values (
     'CARGO',
     'INSTITUCIÓN',
     'BIOGRAFÍA',
-    'RUTA O URL DE FOTO'
+    'URL O RUTA DE FOTO'
 );
 */
 
-
 -- ============================================================
--- 3. PONENCIAS REALES
--- Primero obtener el id del evento real desde Supabase.
--- modalidad_inscripcion normalmente será 'individual'.
+-- 3. PONENCIA
+-- modalidad_inscripcion = individual
 -- ============================================================
 
 /*
@@ -94,11 +87,15 @@ insert into public.actividades (
     tipo,
     titulo,
     descripcion,
+    imagen_url,
     fecha_inicio,
     fecha_fin,
     lugar,
     capacidad,
     requiere_inscripcion,
+    inscripciones_abiertas,
+    inscripcion_inicio,
+    inscripcion_fin,
     modalidad_inscripcion,
     cuenta_para_certificado,
     estado
@@ -107,23 +104,25 @@ values (
     'UUID-DEL-EVENTO',
     'ponencia',
     'TÍTULO OFICIAL',
-    'DESCRIPCIÓN OFICIAL',
+    'DESCRIPCIÓN',
+    null,
     'AAAA-MM-DD HH:MM:SS-05',
     'AAAA-MM-DD HH:MM:SS-05',
     'LUGAR',
     100,
     true,
+    true,
+    'AAAA-MM-DD HH:MM:SS-05',
+    'AAAA-MM-DD HH:MM:SS-05',
     'individual',
     true,
     'publicado'
 );
 */
 
-
 -- ============================================================
--- 4. CONCURSOS REALES
--- Si es por equipos, definir mínimo y máximo de integrantes.
--- capacidad = cantidad máxima de equipos cuando la modalidad es equipo.
+-- 4. CONCURSO POR EQUIPO
+-- capacidad = cantidad máxima de EQUIPOS inscritos.
 -- ============================================================
 
 /*
@@ -132,11 +131,15 @@ insert into public.actividades (
     tipo,
     titulo,
     descripcion,
+    enlace_bases,
     fecha_inicio,
     fecha_fin,
     lugar,
     capacidad,
     requiere_inscripcion,
+    inscripciones_abiertas,
+    inscripcion_inicio,
+    inscripcion_fin,
     modalidad_inscripcion,
     minimo_integrantes_equipo,
     maximo_integrantes_equipo,
@@ -147,12 +150,16 @@ values (
     'UUID-DEL-EVENTO',
     'concurso',
     'NOMBRE OFICIAL DEL CONCURSO',
-    'DESCRIPCIÓN / BASE RESUMIDA',
+    'DESCRIPCIÓN',
+    'URL-DE-LAS-BASES',
     'AAAA-MM-DD HH:MM:SS-05',
     'AAAA-MM-DD HH:MM:SS-05',
     'LUGAR',
     20,
     true,
+    true,
+    'AAAA-MM-DD HH:MM:SS-05',
+    'AAAA-MM-DD HH:MM:SS-05',
     'equipo',
     3,
     5,
@@ -161,10 +168,8 @@ values (
 );
 */
 
-
 -- ============================================================
--- 5. RELACIONAR PONENTE CON PONENCIA
--- Ejecutar cuando ambos registros ya existan.
+-- 5. RELACIÓN PONENTE-PONENCIA
 -- ============================================================
 
 /*
@@ -178,15 +183,6 @@ values (
 );
 */
 
-
--- ============================================================
--- REGLA
--- No agregar aquí:
--- - usuarios reales;
--- - contraseñas;
--- - codigo de matricula de participantes;
--- - asistencia real;
--- - certificados reales.
---
--- Esa información se generará desde la propia plataforma.
--- ============================================================
+-- Nunca colocar aquí:
+-- contraseñas, claves Supabase, service_role, DNI masivos,
+-- asistencias reales ni certificados reales.
