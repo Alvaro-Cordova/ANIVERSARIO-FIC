@@ -312,6 +312,7 @@ document.getElementById('btnReporteVial').addEventListener('click', async () => 
 // 10. EXPORTACIÓN XLSX
 // ============================================================
 async function descargarReporteExcel(cursoId, nombreArchivo) {
+
     const { data, error } = await obtenerReporteCurso(cursoId)
 
     if (error) {
@@ -319,36 +320,415 @@ async function descargarReporteExcel(cursoId, nombreArchivo) {
         return
     }
 
-    if (!Array.isArray(data)) {
-        mostrar({ data: null, error: { message: 'El reporte no devolvió una lista válida.' } })
+    if (!Array.isArray(data) || data.length === 0) {
+        mostrar({
+            data: null,
+            error: {
+                message: 'El reporte no devolvió registros.'
+            }
+        })
         return
     }
-
-    const filas = data.map((registro, index) => ({
-        'N°': index + 1,
-        'Correo': registro.correo ?? '',
-        'Participante': registro.participante ?? '',
-        'Curso': registro.curso ?? '',
-        'Docente': registro.docente ?? '',
-        'Ponencia': registro.actividad ?? '',
-        'Registró esta ponencia para el curso': registro.seleccionado_para_curso ? 'Sí' : 'No',
-        'Primera entrada': registro.primera_entrada ?? '',
-        'Última salida': registro.ultima_salida ?? '',
-        'Minutos presentes': registro.minutos_presentes ?? 0,
-        'Porcentaje de asistencia': `${registro.porcentaje_presencia ?? 0}%`,
-        'Estado': registro.estado_academico ?? ''
-    }))
 
     if (!window.XLSX) {
-        mostrar({ data: null, error: { message: 'La librería XLSX no se cargó correctamente.' } })
+        mostrar({
+            data: null,
+            error: {
+                message: 'La librería XLSX no se cargó correctamente.'
+            }
+        })
         return
     }
 
-    const hoja = window.XLSX.utils.json_to_sheet(filas)
-    const libro = window.XLSX.utils.book_new()
+    function formatearHora(fechaIso) {
 
-    window.XLSX.utils.book_append_sheet(libro, hoja, 'Asistencia')
-    window.XLSX.writeFile(libro, nombreArchivo)
+        if (!fechaIso) {
+            return ''
+        }
+
+        const fecha = new Date(fechaIso)
+
+        if (Number.isNaN(fecha.getTime())) {
+            return ''
+        }
+
+        const partes =
+            new Intl.DateTimeFormat(
+                'es-PE',
+                {
+                    timeZone: 'America/Lima',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }
+            ).formatToParts(fecha)
+
+        const hora =
+            partes.find(p => p.type === 'hour')?.value ?? '00'
+
+        const minuto =
+            partes.find(p => p.type === 'minute')?.value ?? '00'
+
+        return `${hora}:${minuto} h`
+    }
+
+
+    function formatearEstado(estado) {
+
+        const equivalencias = {
+            ASISTIO: 'Asistió',
+            ASISTENCIA_PARCIAL: 'Asistencia parcial',
+            NO_ASISTIO: 'No asistió',
+            NO_REGISTRADO: 'No registrado'
+        }
+
+        return equivalencias[estado] ?? estado ?? ''
+    }
+
+
+    const primero = data[0]
+
+    const curso =
+        primero.curso ?? 'Curso'
+
+    const docente =
+        primero.docente ?? ''
+
+    const ponencia =
+        primero.actividad ?? ''
+
+    const generadoEn =
+        new Intl.DateTimeFormat(
+            'es-PE',
+            {
+                timeZone: 'America/Lima',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }
+        ).format(new Date())
+
+
+    const encabezados = [
+        'N°',
+        'Correo',
+        'Participante',
+        'Curso',
+        'Docente',
+        'Ponencia',
+        'Registró esta ponencia para el curso',
+        'Hora de entrada',
+        'Hora de salida',
+        'Minutos presentes',
+        'Porcentaje de asistencia',
+        'Estado'
+    ]
+
+
+    const filas =
+        data.map((registro, index) => ([
+            index + 1,
+            registro.correo ?? '',
+            registro.participante ?? '',
+            registro.curso ?? '',
+            registro.docente ?? '',
+            registro.actividad ?? '',
+            registro.seleccionado_para_curso
+                ? 'Sí'
+                : 'No',
+            formatearHora(registro.primera_entrada),
+            formatearHora(registro.ultima_salida),
+            Number(registro.minutos_presentes ?? 0),
+            Number(registro.porcentaje_presencia ?? 0),
+            formatearEstado(registro.estado_academico)
+        ]))
+
+
+    const contenido = [
+        [
+            `REPORTE DE ASISTENCIA - ${curso.toUpperCase()}`
+        ],
+        [
+            'Curso:',
+            curso,
+            '',
+            'Docente:',
+            docente,
+            '',
+            'Ponencia:',
+            ponencia
+        ],
+        [
+            'Generado:',
+            generadoEn,
+            '',
+            'Total de alumnos:',
+            data.length
+        ],
+        [],
+        encabezados,
+        ...filas
+    ]
+
+
+    const hoja =
+        window.XLSX.utils.aoa_to_sheet(contenido)
+
+
+    hoja['!merges'] = [
+        {
+            s: { r: 0, c: 0 },
+            e: { r: 0, c: 11 }
+        }
+    ]
+
+
+    hoja['!cols'] = [
+        { wch: 6 },
+        { wch: 30 },
+        { wch: 32 },
+        { wch: 34 },
+        { wch: 28 },
+        { wch: 38 },
+        { wch: 31 },
+        { wch: 18 },
+        { wch: 18 },
+        { wch: 18 },
+        { wch: 23 },
+        { wch: 22 }
+    ]
+
+
+    hoja['!rows'] = [
+        { hpt: 30 },
+        { hpt: 23 },
+        { hpt: 23 },
+        { hpt: 8 },
+        { hpt: 38 }
+    ]
+
+
+    hoja['!autofilter'] = {
+        ref: `A5:L${5 + filas.length}`
+    }
+
+
+    const borde = {
+        top: {
+            style: 'thin',
+            color: { rgb: 'D1D5DB' }
+        },
+        bottom: {
+            style: 'thin',
+            color: { rgb: 'D1D5DB' }
+        },
+        left: {
+            style: 'thin',
+            color: { rgb: 'D1D5DB' }
+        },
+        right: {
+            style: 'thin',
+            color: { rgb: 'D1D5DB' }
+        }
+    }
+
+
+    hoja['A1'].s = {
+        font: {
+            bold: true,
+            color: { rgb: 'FFFFFF' },
+            sz: 16
+        },
+        fill: {
+            fgColor: { rgb: '1F4E78' }
+        },
+        alignment: {
+            horizontal: 'center',
+            vertical: 'center'
+        }
+    }
+
+
+    for (const direccion of [
+        'A2',
+        'D2',
+        'G2',
+        'A3',
+        'D3'
+    ]) {
+
+        if (hoja[direccion]) {
+
+            hoja[direccion].s = {
+                font: {
+                    bold: true,
+                    color: { rgb: '1F2937' }
+                },
+                fill: {
+                    fgColor: { rgb: 'D9EAF7' }
+                },
+                alignment: {
+                    vertical: 'center'
+                }
+            }
+        }
+    }
+
+
+    for (
+        let columna = 0;
+        columna < 12;
+        columna++
+    ) {
+
+        const direccion =
+            window.XLSX.utils.encode_cell({
+                r: 4,
+                c: columna
+            })
+
+        hoja[direccion].s = {
+            font: {
+                bold: true,
+                color: { rgb: 'FFFFFF' }
+            },
+            fill: {
+                fgColor: { rgb: '2F75B5' }
+            },
+            alignment: {
+                horizontal: 'center',
+                vertical: 'center',
+                wrapText: true
+            },
+            border: borde
+        }
+    }
+
+
+    for (
+        let fila = 5;
+        fila < 5 + filas.length;
+        fila++
+    ) {
+
+        hoja['!rows'][fila] = {
+            hpt: 26
+        }
+
+        for (
+            let columna = 0;
+            columna < 12;
+            columna++
+        ) {
+
+            const direccion =
+                window.XLSX.utils.encode_cell({
+                    r: fila,
+                    c: columna
+                })
+
+            const celda =
+                hoja[direccion]
+
+            if (!celda) {
+                continue
+            }
+
+            celda.s = {
+                alignment: {
+                    vertical: 'center',
+                    horizontal:
+                        [0, 6, 7, 8, 9, 10, 11]
+                            .includes(columna)
+                            ? 'center'
+                            : 'left',
+                    wrapText: true
+                },
+                border: borde,
+                fill: {
+                    fgColor: {
+                        rgb:
+                            fila % 2 === 0
+                                ? 'F7FAFC'
+                                : 'FFFFFF'
+                    }
+                }
+            }
+
+
+            if (columna === 9) {
+                celda.z = '0.00'
+            }
+
+
+            if (columna === 10) {
+                celda.z = '0.00"%"'
+            }
+        }
+
+
+        const direccionEstado =
+            window.XLSX.utils.encode_cell({
+                r: fila,
+                c: 11
+            })
+
+        const celdaEstado =
+            hoja[direccionEstado]
+
+        if (celdaEstado) {
+
+            const estado =
+                String(celdaEstado.v)
+
+            let color = 'FFFFFF'
+
+            if (estado === 'Asistió') {
+                color = 'E2F0D9'
+            }
+
+            if (estado === 'Asistencia parcial') {
+                color = 'FFF2CC'
+            }
+
+            if (estado === 'No asistió') {
+                color = 'FCE4D6'
+            }
+
+            if (estado === 'No registrado') {
+                color = 'E7E6E6'
+            }
+
+            celdaEstado.s.fill = {
+                fgColor: {
+                    rgb: color
+                }
+            }
+
+            celdaEstado.s.font = {
+                bold: true
+            }
+        }
+    }
+
+
+    const libro =
+        window.XLSX.utils.book_new()
+
+    window.XLSX.utils.book_append_sheet(
+        libro,
+        hoja,
+        'Asistencia'
+    )
+
+    window.XLSX.writeFile(
+        libro,
+        nombreArchivo
+    )
+
 
     mostrar({
         data: {
@@ -359,6 +739,7 @@ async function descargarReporteExcel(cursoId, nombreArchivo) {
         error: null
     })
 }
+
 
 document.getElementById('btnExcelSuelos').addEventListener('click', async () => {
     await descargarReporteExcel(CURSO_SUELOS, 'asistencia_mecanica_de_suelos.xlsx')
