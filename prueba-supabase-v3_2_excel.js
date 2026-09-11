@@ -748,3 +748,176 @@ document.getElementById('btnExcelSuelos').addEventListener('click', async () => 
 document.getElementById('btnExcelVial').addEventListener('click', async () => {
     await descargarReporteExcel(CURSO_VIAL, 'asistencia_diseno_vial.xlsx')
 })
+
+// ============================================================
+// 11. SEGURIDAD RLS
+// ============================================================
+
+document
+    .getElementById('btnVerSesiones')
+    .addEventListener('click', async () => {
+
+        const { data, error } =
+            await supabase
+                .from('sesiones_presencia')
+                .select(`
+                    id,
+                    usuario_id,
+                    sala_id,
+                    entrada_en,
+                    salida_en,
+                    estado
+                `)
+                .order('entrada_en')
+
+        mostrar({
+            data,
+            error
+        })
+    })
+
+
+document
+    .getElementById('btnIntentarInsertarSesion')
+    .addEventListener('click', async () => {
+
+        const { data: usuarioData } =
+            await supabase.auth.getUser()
+
+        const usuarioId =
+            usuarioData.user?.id
+
+        if (!usuarioId) {
+            mostrar({
+                data: null,
+                error: {
+                    message: 'Debes iniciar sesión.'
+                }
+            })
+            return
+        }
+
+        const { data, error } =
+            await supabase
+                .from('sesiones_presencia')
+                .insert({
+                    evento_id:
+                        '10000000-0000-0000-0000-000000000001',
+
+                    sala_id:
+                        '11000000-0000-0000-0000-000000000001',
+
+                    usuario_id:
+                        usuarioId,
+
+                    entrada_en:
+                        new Date().toISOString(),
+
+                    estado:
+                        'registrada'
+                })
+                .select()
+
+        mostrar({
+            data,
+            error
+        })
+    })
+
+// ============================================================
+// 12. CERTIFICADOS
+// ============================================================
+
+document
+    .getElementById('btnEmitirCertificado')
+    .addEventListener('click', async () => {
+
+        const usuarioId =
+            document
+                .getElementById('idUsuarioCertificado')
+                .value
+                .trim()
+
+        if (!usuarioId) {
+
+            mostrar({
+                data: null,
+                error: {
+                    message: 'Debes indicar el ID del participante.'
+                }
+            })
+
+            return
+        }
+
+        const { data, error } =
+            await supabase.rpc(
+                'emitir_certificado_manual',
+                {
+                    p_evento_id:
+                        '10000000-0000-0000-0000-000000000001',
+
+                    p_usuario_id:
+                        usuarioId,
+
+                    p_tipo:
+                        'participacion',
+
+                    p_actividad_id:
+                        null,
+
+                    p_pdf_url:
+                        null
+                }
+            )
+
+        mostrar({
+            data,
+            error
+        })
+
+        if (!error && data?.codigo) {
+
+            document
+                .getElementById('codigoCertificado')
+                .value =
+                data.codigo
+        }
+    })
+
+
+document
+    .getElementById('btnVerificarCertificado')
+    .addEventListener('click', async () => {
+
+        const codigo =
+            document
+                .getElementById('codigoCertificado')
+                .value
+                .trim()
+
+        if (!codigo) {
+
+            mostrar({
+                data: null,
+                error: {
+                    message: 'Debes indicar el código del certificado.'
+                }
+            })
+
+            return
+        }
+
+        const { data, error } =
+            await supabase.rpc(
+                'verificar_certificado',
+                {
+                    p_codigo: codigo
+                }
+            )
+
+        mostrar({
+            data,
+            error
+        })
+    })
