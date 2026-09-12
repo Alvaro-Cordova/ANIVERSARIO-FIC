@@ -67,7 +67,7 @@ REGLAS:
 12. No desactives RLS.
 13. No insertes directamente en tablas si existe una función RPC.
 14. No modifiques funciones SQL existentes sin indicármelo primero.
-15. Si la parte de diseño (modulos - informacion o compartido-codigo reutilizable) no tienen definido el diseño final que tendra toda la pagina, no hacer el archivo .css (hacer recordar al usuario). Cuando se haya comprobado que si existe un diseño, puedes hacer el apartado visual sin problemas. De todas maneras dejalo configurado ya para que cuando el diseño este listo, automaticamente el archivo css se actualice (de ser posible)
+15. Si la parte de diseño (modulos - informacion o compartido-codigo reutilizable) no tienen definido el diseño final que tendra toda la pagina, no hacer el archivo .css (hacer recordar al usuario). Cuando se haya comprobado que si existe un diseño, puedes hacer el apartado visual sin problemas. De todas maneras dejalo configurado ya para que cuando el diseño este listo, automaticamente el archivo css se actualice (de ser posible). ESTA REGLA INCLUYE PARA CUALQUIER MODULO QUE DEPENDA DE OTRO Y ESTE AUN NO HAYA SIDO TERMINADO, DEJAS LISTO EL CODIGO COSA QUE LEA AUTOMATICAMENTE LA PARTE DEPENDIENTE CUANDO ESTE SEA ACABADO Y NO SE TENGA QUE VOLVER A REHACER EL CODIGO, CON ESO NOS AHORRAMOS PROBLEMAS.
 
 Quiero implementar lo siguiente: (mas informacion ver los LEEME.md de cada apartado de modulo)
 
