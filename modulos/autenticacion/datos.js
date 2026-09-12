@@ -76,6 +76,9 @@ export async function registrarUsuario(datosRegistro) {
         email: correo,
         password: password,
         options: {
+            emailRedirectTo:
+            "http://127.0.0.1:5500/modulos/autenticacion/confirmar-email.html",
+
             data: {
                 nombres: nombres,
                 apellidos: apellidos,
