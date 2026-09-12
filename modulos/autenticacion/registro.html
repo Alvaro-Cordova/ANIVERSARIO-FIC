@@ -10,17 +10,29 @@
     <main class="auth-contenedor">
         <section class="auth-tarjeta">
             <h1>Crear cuenta</h1>
+
             <p class="auth-subtitulo">
                 Regístrate para participar en el evento.
             </p>
 
-            <p id="mensaje-registro" class="mensaje" hidden></p>
+            <p
+                id="mensaje-registro"
+                class="mensaje"
+                hidden
+            ></p>
 
             <form id="formulario-registro" novalidate>
 
+                <!-- ==========================================
+                     Nombres y apellidos
+                     ========================================== -->
+
                 <div class="auth-fila">
                     <div>
-                        <label for="reg-nombres">Nombres</label>
+                        <label for="reg-nombres">
+                            Nombres
+                        </label>
+
                         <input
                             type="text"
                             id="reg-nombres"
@@ -31,7 +43,10 @@
                     </div>
 
                     <div>
-                        <label for="reg-apellidos">Apellidos</label>
+                        <label for="reg-apellidos">
+                            Apellidos
+                        </label>
+
                         <input
                             type="text"
                             id="reg-apellidos"
@@ -42,7 +57,15 @@
                     </div>
                 </div>
 
-                <label for="reg-correo">Correo</label>
+
+                <!-- ==========================================
+                     Correo
+                     ========================================== -->
+
+                <label for="reg-correo">
+                    Correo
+                </label>
+
                 <input
                     type="email"
                     id="reg-correo"
@@ -51,9 +74,17 @@
                     required
                 >
 
+
+                <!-- ==========================================
+                     Contraseña
+                     ========================================== -->
+
                 <div class="auth-fila">
                     <div>
-                        <label for="reg-password">Contraseña</label>
+                        <label for="reg-password">
+                            Contraseña
+                        </label>
+
                         <input
                             type="password"
                             id="reg-password"
@@ -67,6 +98,7 @@
                         <label for="reg-confirmar-password">
                             Confirmar contraseña
                         </label>
+
                         <input
                             type="password"
                             id="reg-confirmar-password"
@@ -77,30 +109,126 @@
                     </div>
                 </div>
 
-                <div class="auth-fila">
+
+                <!-- ==========================================
+                     Tipo de participante
+                     
+                     Este campo NO representa el rol de seguridad.
+                     El rol del usuario será gestionado únicamente
+                     desde el backend.
+                     ========================================== -->
+
+                <label for="reg-tipo-participante">
+                    Tipo de participante
+                </label>
+
+                <select
+                    id="reg-tipo-participante"
+                    name="tipoParticipante"
+                    required
+                >
+                    <option value="">
+                        Selecciona una opción
+                    </option>
+
+                    <option value="ESTUDIANTE">
+                        Estudiante
+                    </option>
+
+                    <option value="OTRO">
+                        Otro
+                    </option>
+                </select>
+
+
+                <!-- ==========================================
+                     Datos exclusivos para estudiantes
+
+                     interfaz.js mostrará esta sección únicamente
+                     cuando se seleccione "Estudiante".
+                     ========================================== -->
+
+                <div
+                    id="campos-estudiante"
+                    class="auth-fila"
+                    hidden
+                >
                     <div>
                         <label for="reg-codigo-matricula">
                             Código de matrícula
                         </label>
+
                         <input
                             type="text"
                             id="reg-codigo-matricula"
                             name="codigoMatricula"
-                            required
+                            disabled
                         >
                     </div>
 
                     <div>
-                        <label for="reg-semestre">Semestre</label>
-                        <input
-                            type="text"
+                        <label for="reg-semestre">
+                            Semestre
+                        </label>
+
+                        <select
                             id="reg-semestre"
                             name="semestre"
-                            placeholder="Ej. 2026-II"
-                            required
+                            disabled
                         >
+                            <option value="">
+                                Selecciona
+                            </option>
+
+                            <option value="I">I</option>
+                            <option value="II">II</option>
+                            <option value="III">III</option>
+                            <option value="IV">IV</option>
+                            <option value="V">V</option>
+                            <option value="VI">VI</option>
+                            <option value="VII">VII</option>
+                            <option value="VIII">VIII</option>
+                            <option value="IX">IX</option>
+                            <option value="X">X</option>
+                        </select>
                     </div>
                 </div>
+
+
+                <!-- ==========================================
+                     Datos para participantes que no son estudiantes
+
+                     Por ejemplo:
+                     - Docente
+                     - Egresado
+                     - Invitado
+                     - Otro participante
+
+                     interfaz.js mostrará esta sección únicamente
+                     cuando se seleccione "Otro".
+                     ========================================== -->
+
+                <div
+                    id="campos-otro"
+                    hidden
+                >
+                    <label for="reg-detalle-tipo">
+                        Especifique
+                    </label>
+
+                    <input
+                        type="text"
+                        id="reg-detalle-tipo"
+                        name="detalleTipo"
+                        placeholder="Ej. Docente, egresado, invitado"
+                        disabled
+                    >
+                </div>
+
+
+                <!-- ==========================================
+                     Botón de registro
+                     ========================================== -->
 
                 <button
                     type="submit"
@@ -111,13 +239,23 @@
                 </button>
             </form>
 
+
+            <!-- ==============================================
+                 Enlace a inicio de sesión
+                 ============================================== -->
+
             <p class="auth-enlace">
                 ¿Ya tienes cuenta?
-                <a href="iniciar-sesion.html">Inicia sesión</a>
+                <a href="iniciar-sesion.html">
+                    Inicia sesión
+                </a>
             </p>
         </section>
     </main>
 
-    <script type="module" src="interfaz.js"></script>
+    <script
+        type="module"
+        src="interfaz.js"
+    ></script>
 </body>
 </html>

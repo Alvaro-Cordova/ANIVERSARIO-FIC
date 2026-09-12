@@ -141,11 +141,93 @@ function inicializarRegistro() {
     const boton =
         document.getElementById('btn-registro')
 
+
+    // --------------------------------------------------------
+    // Tipo de participante
+    // --------------------------------------------------------
+    //
+    // El rol del sistema no se selecciona desde el registro.
+    // Todo registro público corresponde al asistente general.
+    //
+    // Este selector únicamente define el tipo de participante
+    // para solicitar los datos académicos correspondientes.
+
+    const selectorTipo =
+        document.getElementById('reg-tipo-participante')
+
+    const camposEstudiante =
+        document.getElementById('campos-estudiante')
+
+    const camposOtro =
+        document.getElementById('campos-otro')
+
+    const campoCodigoMatricula =
+        document.getElementById('reg-codigo-matricula')
+
+    const campoSemestre =
+        document.getElementById('reg-semestre')
+
+    const campoDetalleTipo =
+        document.getElementById('reg-detalle-tipo')
+
+
+    function actualizarCamposTipoParticipante() {
+        const tipoParticipante =
+            selectorTipo.value
+
+        const esEstudiante =
+            tipoParticipante === 'ESTUDIANTE'
+
+        const esOtro =
+            tipoParticipante === 'OTRO'
+
+
+        camposEstudiante.hidden =
+            !esEstudiante
+
+        camposOtro.hidden =
+            !esOtro
+
+
+        campoCodigoMatricula.disabled =
+            !esEstudiante
+
+        campoSemestre.disabled =
+            !esEstudiante
+
+        campoDetalleTipo.disabled =
+            !esOtro
+
+
+        // Si deja de ser estudiante, se limpian los datos
+        // académicos para evitar enviar información anterior.
+        if (!esEstudiante) {
+            campoCodigoMatricula.value = ''
+            campoSemestre.value = ''
+        }
+
+
+        // Si deja de ser "Otro", se limpia la descripción.
+        if (!esOtro) {
+            campoDetalleTipo.value = ''
+        }
+    }
+
+
+    selectorTipo.addEventListener(
+        'change',
+        actualizarCamposTipoParticipante
+    )
+
+    actualizarCamposTipoParticipante()
+
+
     formulario.addEventListener(
         'submit',
         async (evento) => {
             evento.preventDefault()
             limpiarMensaje(mensaje)
+
 
             const nombres =
                 document
@@ -175,15 +257,19 @@ function inicializarRegistro() {
                     .getElementById('reg-confirmar-password')
                     .value
 
+            const tipoParticipante =
+                selectorTipo.value
+
             const codigoMatricula =
-                document
-                    .getElementById('reg-codigo-matricula')
+                campoCodigoMatricula
                     .value
                     .trim()
 
             const semestre =
-                document
-                    .getElementById('reg-semestre')
+                campoSemestre.value
+
+            const detalleTipo =
+                campoDetalleTipo
                     .value
                     .trim()
 
@@ -196,12 +282,11 @@ function inicializarRegistro() {
                 campoVacio(correo) ||
                 campoVacio(password) ||
                 campoVacio(confirmarPassword) ||
-                campoVacio(codigoMatricula) ||
-                campoVacio(semestre)
+                campoVacio(tipoParticipante)
             ) {
                 mostrarMensaje(
                     mensaje,
-                    'Completa todos los campos.'
+                    'Completa todos los campos obligatorios.'
                 )
                 return
             }
@@ -239,6 +324,46 @@ function inicializarRegistro() {
             }
 
 
+            if (
+                tipoParticipante === 'ESTUDIANTE'
+            ) {
+                if (
+                    campoVacio(codigoMatricula)
+                ) {
+                    mostrarMensaje(
+                        mensaje,
+                        'Ingresa tu código de matrícula.'
+                    )
+                    return
+                }
+
+                if (
+                    campoVacio(semestre)
+                ) {
+                    mostrarMensaje(
+                        mensaje,
+                        'Selecciona tu semestre.'
+                    )
+                    return
+                }
+            }
+
+
+            if (
+                tipoParticipante === 'OTRO'
+            ) {
+                if (
+                    campoVacio(detalleTipo)
+                ) {
+                    mostrarMensaje(
+                        mensaje,
+                        'Especifica tu tipo de participante.'
+                    )
+                    return
+                }
+            }
+
+
             bloquearBoton(
                 boton,
                 'Creando cuenta...'
@@ -255,7 +380,23 @@ function inicializarRegistro() {
                     nombres,
                     apellidos,
                     correo,
-                    password
+                    password,
+                    tipoParticipante,
+
+                    codigoMatricula:
+                        tipoParticipante === 'ESTUDIANTE'
+                            ? codigoMatricula
+                            : null,
+
+                    semestre:
+                        tipoParticipante === 'ESTUDIANTE'
+                            ? semestre
+                            : null,
+
+                    detalleTipo:
+                        tipoParticipante === 'OTRO'
+                            ? detalleTipo
+                            : null
                 })
 
 
@@ -282,6 +423,9 @@ function inicializarRegistro() {
                 )
 
                 formulario.reset()
+
+                actualizarCamposTipoParticipante()
+
                 return
             }
 
