@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Demo del sistema visual compartido</title>
+
+    <link rel="stylesheet" href="./estilos/variables.css">
+    <link rel="stylesheet" href="./estilos/global.css">
+    <link rel="stylesheet" href="./estilos/componentes.css">
+
+    <style>
+        .demo-bloque {
+            margin-bottom: var(--espacio-10);
+        }
+
+        .demo-fila {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--espacio-3);
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="cabecera">
+        <div class="contenedor cabecera__contenido">
+            <a class="marca" href="#">
+                ANIVERSARIO FIC
+            </a>
+
+            <nav class="navegacion">
+                <a href="#" aria-current="page">Inicio</a>
+                <a href="#">Ponencias</a>
+                <a href="#">Concursos</a>
+                <a href="#">Mi cuenta</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="contenedor seccion">
+
+        <h1>Sistema visual compartido</h1>
+
+        <p class="descripcion-seccion">
+            Esta página permite revisar los componentes visuales que deben
+            reutilizar todos los módulos.
+        </p>
+
+
+        <section class="demo-bloque">
+            <h2>Botones</h2>
+
+            <div class="demo-fila">
+                <button class="btn btn--primario">
+                    Acción principal
+                </button>
+
+                <button class="btn btn--secundario">
+                    Acción secundaria
+                </button>
+
+                <button class="btn btn--acento">
+                    Acción destacada
+                </button>
+
+                <button class="btn btn--peligro">
+                    Eliminar
+                </button>
+            </div>
+        </section>
+
+
+        <section class="demo-bloque">
+            <h2>Tarjetas</h2>
+
+            <div class="grid grid--3">
+
+                <article class="tarjeta">
+                    <span class="badge badge--info">
+                        Ponencia
+                    </span>
+
+                    <h3 class="tarjeta__titulo">
+                        Ingeniería Civil
+                    </h3>
+
+                    <p class="tarjeta__texto">
+                        Ejemplo de tarjeta reutilizable.
+                    </p>
+                </article>
+
+                <article class="tarjeta tarjeta--elevada">
+                    <span class="badge badge--exito">
+                        Inscrito
+                    </span>
+
+                    <h3 class="tarjeta__titulo">
+                        Mi inscripción
+                    </h3>
+
+                    <p class="tarjeta__texto">
+                        Estado correcto de la inscripción.
+                    </p>
+                </article>
+
+                <article class="tarjeta">
+                    <span class="badge badge--advertencia">
+                        Pendiente
+                    </span>
+
+                    <h3 class="tarjeta__titulo">
+                        Validación
+                    </h3>
+
+                    <p class="tarjeta__texto">
+                        Pago pendiente de revisión.
+                    </p>
+                </article>
+
+            </div>
+        </section>
+
+
+        <section class="demo-bloque">
+            <h2>Formulario</h2>
+
+            <div class="tarjeta" style="max-width: 560px;">
+
+                <form class="formulario">
+
+                    <div class="grupo-campo">
+                        <label
+                            class="etiqueta"
+                            for="correo"
+                        >
+                            Correo electrónico
+                        </label>
+
+                        <input
+                            class="campo"
+                            id="correo"
+                            type="email"
+                            placeholder="nombre@correo.com"
+                        >
+
+                        <p class="ayuda-campo">
+                            Utiliza un correo al que tengas acceso.
+                        </p>
+                    </div>
+
+                    <div class="grupo-campo">
+                        <label
+                            class="etiqueta"
+                            for="tipo"
+                        >
+                            Tipo de participante
+                        </label>
+
+                        <select
+                            class="campo"
+                            id="tipo"
+                        >
+                            <option>Estudiante</option>
+                            <option>Profesional</option>
+                        </select>
+                    </div>
+
+                    <button
+                        class="btn btn--primario btn--bloque"
+                        type="button"
+                    >
+                        Guardar
+                    </button>
+
+                </form>
+
+            </div>
+        </section>
+
+
+        <section class="demo-bloque">
+            <h2>Mensajes</h2>
+
+            <div class="grid grid--2">
+
+                <div class="alerta alerta--exito">
+                    <p>
+                        Operación completada correctamente.
+                    </p>
+                </div>
+
+                <div class="alerta alerta--error">
+                    <p>
+                        No fue posible completar la operación.
+                    </p>
+                </div>
+
+                <div class="alerta alerta--advertencia">
+                    <p>
+                        La validación todavía está pendiente.
+                    </p>
+                </div>
+
+                <div class="alerta alerta--info">
+                    <p>
+                        Información importante para el usuario.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+
+        <section class="demo-bloque">
+            <h2>Tabla</h2>
+
+            <div class="tabla-contenedor">
+
+                <table class="tabla">
+                    <thead>
+                        <tr>
+                            <th>Participante</th>
+                            <th>Actividad</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>Participante de ejemplo</td>
+                            <td>Ponencia</td>
+                            <td>
+                                <span class="badge badge--exito">
+                                    Asistió
+                                </span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Otro participante</td>
+                            <td>Concurso</td>
+                            <td>
+                                <span class="badge badge--advertencia">
+                                    Pendiente
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="pie-pagina">
+        <div class="contenedor">
+            <strong>ANIVERSARIO FIC</strong>
+            <p>
+                Sistema visual compartido para todos los módulos.
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>
