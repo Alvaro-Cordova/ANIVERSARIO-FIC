@@ -25,7 +25,6 @@ datos.js
 - Manejo básico de tipos de usuario.
 
 ## registro.html
-
 Debe contener el formulario necesario para registrar al participante.
 
 Los datos definitivos serán definidos en la base de datos.

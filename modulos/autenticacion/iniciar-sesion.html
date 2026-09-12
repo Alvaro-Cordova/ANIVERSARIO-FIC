@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión — Aniversario FIC</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <main class="auth-contenedor">
+        <section class="auth-tarjeta">
+            <h1>Iniciar sesión</h1>
+            <p class="auth-subtitulo">Ingresa con tu correo y contraseña.</p>
+
+            <p id="mensaje-login" class="mensaje" hidden></p>
+
+            <form id="formulario-login" novalidate>
+                <label for="login-correo">Correo</label>
+                <input type="email" id="login-correo" name="correo" autocomplete="email" required>
+
+                <label for="login-password">Contraseña</label>
+                <input type="password" id="login-password" name="password" autocomplete="current-password" required>
+
+                <button type="submit" id="btn-login" class="boton-primario">Ingresar</button>
+            </form>
+            <p class="auth-enlace">
+                <a href="recuperar-contrasena.html">
+                     ¿Olvidaste tu contraseña?
+                </a>
+            </p>
+
+            <p class="auth-enlace">
+                ¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a>
+            </p>
+        </section>
+    </main>
+
+    <script type="module" src="interfaz.js"></script>
+</body>
+</html>

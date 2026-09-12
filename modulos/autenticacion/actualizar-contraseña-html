@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva contraseña — Aniversario FIC</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <main class="auth-contenedor">
+        <section class="auth-tarjeta">
+            <h1>Nueva contraseña</h1>
+
+            <p class="auth-subtitulo">
+                Ingresa la nueva contraseña para tu cuenta.
+            </p>
+
+            <p
+                id="mensaje-actualizar-contrasena"
+                class="mensaje"
+                hidden
+            ></p>
+
+            <form id="formulario-actualizar-contrasena" novalidate>
+                <label for="nueva-password">
+                    Nueva contraseña
+                </label>
+
+                <input
+                    type="password"
+                    id="nueva-password"
+                    name="password"
+                    autocomplete="new-password"
+                    required
+                >
+
+                <label for="confirmar-nueva-password">
+                    Confirmar nueva contraseña
+                </label>
+
+                <input
+                    type="password"
+                    id="confirmar-nueva-password"
+                    name="confirmarPassword"
+                    autocomplete="new-password"
+                    required
+                >
+
+                <button
+                    type="submit"
+                    id="btn-actualizar-contrasena"
+                    class="boton-primario"
+                >
+                    Cambiar contraseña
+                </button>
+            </form>
+        </section>
+    </main>
+
+    <script type="module" src="interfaz.js"></script>
+</body>
+</html>

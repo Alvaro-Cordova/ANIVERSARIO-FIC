@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar contraseña — Aniversario FIC</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <main class="auth-contenedor">
+        <section class="auth-tarjeta">
+            <h1>Recuperar contraseña</h1>
+
+            <p class="auth-subtitulo">
+                Ingresa el correo asociado a tu cuenta.
+            </p>
+
+            <p
+                id="mensaje-recuperacion"
+                class="mensaje"
+                hidden
+            ></p>
+
+            <form id="formulario-recuperacion" novalidate>
+                <label for="recuperacion-correo">
+                    Correo
+                </label>
+
+                <input
+                    type="email"
+                    id="recuperacion-correo"
+                    name="correo"
+                    autocomplete="email"
+                    required
+                >
+
+                <button
+                    type="submit"
+                    id="btn-recuperacion"
+                    class="boton-primario"
+                >
+                    Enviar enlace
+                </button>
+            </form>
+
+            <p class="auth-enlace">
+                <a href="iniciar-sesion.html">
+                    Volver a iniciar sesión
+                </a>
+            </p>
+        </section>
+    </main>
+
+    <script type="module" src="interfaz.js"></script>
+</body>
+</html>

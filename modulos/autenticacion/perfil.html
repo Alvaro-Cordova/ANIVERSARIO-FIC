@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi perfil — Aniversario FIC</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <main class="auth-contenedor">
+        <section class="auth-tarjeta auth-tarjeta-ancha">
+            <h1>Mi perfil</h1>
+
+            <p id="mensaje-perfil" class="mensaje" hidden></p>
+
+            <div id="perfil-contenido" hidden>
+                <div class="perfil-resumen">
+                    <div>
+                        <span class="perfil-etiqueta">Nombres</span>
+                        <span id="perfil-nombres" class="perfil-valor"></span>
+                    </div>
+                    <div>
+                        <span class="perfil-etiqueta">Apellidos</span>
+                        <span id="perfil-apellidos" class="perfil-valor"></span>
+                    </div>
+                    <div>
+                        <span class="perfil-etiqueta">Correo</span>
+                        <span id="perfil-correo" class="perfil-valor"></span>
+                    </div>
+                    <div>
+                        <span class="perfil-etiqueta">Tipo de usuario</span>
+                        <span id="perfil-rol" class="perfil-valor"></span>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h2>Editar información</h2>
+                <form id="formulario-perfil" novalidate>
+                    <div class="auth-fila">
+                        <div>
+                            <label for="perfil-tipo-documento">Tipo de documento</label>
+                            <select id="perfil-tipo-documento" name="tipoDocumento">
+                                <option value="DNI">DNI</option>
+                                <option value="CE">Carné de extranjería</option>
+                                <option value="PASAPORTE">Pasaporte</option>
+                                <option value="OTRO">Otro</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="perfil-documento">Número de documento</label>
+                            <input type="text" id="perfil-documento" name="documento">
+                        </div>
+                    </div>
+
+                    <label for="perfil-telefono">Teléfono</label>
+                    <input type="tel" id="perfil-telefono" name="telefono">
+
+                    <div class="auth-fila">
+                        <div>
+                            <label for="perfil-institucion">Institución</label>
+                            <input type="text" id="perfil-institucion" name="institucion">
+                        </div>
+                        <div>
+                            <label for="perfil-carrera">Carrera</label>
+                            <input type="text" id="perfil-carrera" name="carrera">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btn-guardar-perfil" class="boton-primario">Guardar cambios</button>
+                </form>
+
+                <button type="button" id="btn-cerrar-sesion" class="boton-secundario">Cerrar sesión</button>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="interfaz.js"></script>
+</body>
+</html>
