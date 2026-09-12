@@ -1730,11 +1730,13 @@ No uses service_role.
 No desactives RLS.
 No insertes directamente en tablas si existe una función RPC.
 No modifiques funciones SQL existentes sin indicármelo primero.
+Si la parte de diseño (modulos - informacion o compartido-codigo reutilizable) no tienen definido el diseño final que tendra toda la pagina, no hacer el archivo .css (hacer recordar al usuario). Cuando se haya comprobado que si existe un diseño, puedes hacer el apartado visual sin problemas.
 
 Antes de darme código:
 1. dime qué archivo debo modificar;
 2. dime si reemplazo o agrego código;
 3. utiliza únicamente las RPC documentadas en GUIA_CONEXION_SUPABASE_V3_2_1.md.
+4. Indicame que si la instruccion que te di no se sale fuera de mis funciones como desarrollador, en caso lo haga, dime el porque no entra a mis funciones y como continuo avanzando solamente con mi parte.
 ```
 
 ---
