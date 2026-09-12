@@ -1,55 +1,24 @@
-# Recursos del proyecto
+# RECURSOS — Precongreso CONEIC 2027
 
-Esta carpeta contiene archivos NO lógicos reutilizados por toda la plataforma.
+Archivos extraídos del proyecto proporcionado.
 
 ```text
 recursos/
 ├── logos/
+│   └── logo-coneic-2027.png
 ├── imagenes/
+│   └── hero-precongreso.jpg
 ├── iconos/
+│   ├── icon-72.png
+│   ├── icon-96.png
+│   ├── icon-128.png
+│   ├── icon-144.png
+│   ├── icon-152.png
+│   ├── icon-192.png
+│   ├── icon-384.png
+│   ├── icon-512.png
+│   └── icon-maskable-512.png
 └── documentos/
 ```
 
-## Reglas
-
-### `logos/`
-
-Logos oficiales de:
-
-- universidad;
-- Facultad de Ingeniería Civil;
-- CONEIC;
-- patrocinadores.
-
-No duplicar logos dentro de cada módulo.
-
-### `imagenes/`
-
-Fotografías generales del evento, fondos, ponentes, galería, etc.
-
-### `iconos/`
-
-Iconos SVG reutilizados.
-
-Evitar usar emojis como iconos funcionales si existe un SVG disponible.
-
-### `documentos/`
-
-PDF, bases de concursos, reglamentos y otros documentos descargables.
-
-## Nombres
-
-Usar nombres simples:
-
-```text
-logo-fic.svg
-logo-universidad.png
-ponente-juan-perez.webp
-bases-concurso-puentes.pdf
-```
-
-Evitar:
-
-```text
-imagen final definitiva 2 NUEVA.png
-```
+No duplicar estos recursos dentro de módulos.

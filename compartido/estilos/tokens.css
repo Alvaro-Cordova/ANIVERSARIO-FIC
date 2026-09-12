@@ -1,0 +1,85 @@
+/* ============================================================
+   TOKENS.CSS — Variables de diseño (fuente única de verdad)
+   Estas variables pueden ser sobrescritas en tiempo de ejecución
+   por js/services/settings.service.js según lo configurado en
+   /admin/ajustes (personalización completa del panel admin).
+   ============================================================ */
+:root{
+  /* Paleta institucional por defecto: Negro / Dorado / Guinda */
+  --color-black:      #0e0e0e;
+  --color-black-soft: #1a1a1a;
+  --color-gold:       #c9a227;
+  --color-gold-soft:  #e6c766;
+  --color-guinda:     #6e0f24;
+  --color-guinda-soft:#8c1c33;
+
+  /* Roles semánticos (lo que el admin personaliza) */
+  --color-primary:      var(--color-guinda);
+  --color-primary-hover: var(--color-guinda-soft);
+  --color-secondary:    var(--color-gold);
+  --color-secondary-hover: var(--color-gold-soft);
+  --color-bg:           #ffffff;
+  --color-bg-alt:       #f7f5f0;
+  --color-surface:      #ffffff;
+  --color-text:         var(--color-black);
+  --color-text-muted:   #5c5c5c;
+  --color-on-primary:   #ffffff;
+  --color-on-secondary: var(--color-black);
+  --color-border:       #e6e2d8;
+
+  /* Estados funcionales */
+  --color-success: #1e7a3d;
+  --color-warning: #b8860b;
+  --color-error:   #b3261e;
+  --color-info:    #2b5f8a;
+  --color-full:    #7a7a7a;
+
+  /* Tipografía (máx. 2 familias) */
+  --font-heading: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+
+  /* Escala tipográfica fluida */
+  --fs-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.85rem);
+  --fs-sm: clamp(0.875rem, 0.84rem + 0.18vw, 0.95rem);
+  --fs-base: clamp(1rem, 0.96rem + 0.2vw, 1.05rem);
+  --fs-md: clamp(1.15rem, 1.05rem + 0.4vw, 1.35rem);
+  --fs-lg: clamp(1.4rem, 1.2rem + 0.8vw, 1.9rem);
+  --fs-xl: clamp(1.9rem, 1.5rem + 1.6vw, 2.8rem);
+  --fs-2xl: clamp(2.4rem, 1.8rem + 2.6vw, 3.8rem);
+
+  /* Espaciado */
+  --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem;
+  --space-4: 1rem; --space-5: 1.5rem; --space-6: 2rem;
+  --space-7: 3rem; --space-8: 4.5rem; --space-9: 6rem;
+
+  /* Layout */
+  --container-max: 1200px;
+  --radius-sm: 6px; --radius-md: 12px; --radius-lg: 20px; --radius-full: 999px;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 3px rgba(14,14,14,0.08);
+  --shadow-md: 0 6px 20px rgba(14,14,14,0.10);
+  --shadow-lg: 0 16px 40px rgba(14,14,14,0.16);
+
+  /* Motion */
+  --ease: cubic-bezier(.4,0,.2,1);
+  --dur-fast: 150ms; --dur-base: 250ms; --dur-slow: 450ms;
+
+  /* Imágenes personalizables (fallback local; el admin las sobrescribe) */
+  --img-logo: url('../../recursos/logos/logo-coneic-2027.png');
+  --img-hero: url('../../recursos/imagenes/hero-precongreso.jpg');
+  --z-nav: 100; --z-modal: 500; --z-toast: 900;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+[data-theme="dark"]{
+  --color-bg: #101010;
+  --color-bg-alt: #171717;
+  --color-surface: #1b1b1b;
+  --color-text: #f3efe6;
+  --color-text-muted: #b8b2a3;
+  --color-border: #2c2926;
+}
