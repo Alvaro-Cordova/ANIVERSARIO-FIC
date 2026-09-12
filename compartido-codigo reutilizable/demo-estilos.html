@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <meta
+    name="theme-color"
+    content="#6e0f24"
+  >
+
+  <title>Demo visual · Precongreso CONEIC 2027</title>
+
+  <link
+    rel="stylesheet"
+    href="./estilos/tokens.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="./estilos/base.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="./estilos/layout.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="./estilos/components.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="./estilos/pages.css"
+  >
+
+  <style>
+    .demo-toolbar{
+      position:fixed;
+      right:1rem;
+      bottom:1rem;
+      z-index:999;
+      display:flex;
+      gap:.5rem;
+    }
+
+    .demo-section{
+      padding-block:var(--space-7);
+    }
+  </style>
+</head>
+
+<body>
+
+  <a
+    class="skip-link"
+    href="#contenido"
+  >
+    Saltar al contenido
+  </a>
+
+
+  <header class="site-header">
+    <div class="container site-header__bar">
+
+      <a
+        class="brand"
+        href="#"
+      >
+        <img
+          src="../recursos/logos/logo-coneic-2027.png"
+          alt="CONEIC Huancayo 2027"
+        >
+
+        <span class="brand__name">
+          FIC Aniversario
+        </span>
+      </a>
+
+      <nav class="nav-links">
+        <a class="is-active" href="#">Inicio</a>
+        <a href="#">Evento</a>
+        <a href="#">Ponentes</a>
+        <a href="#">Ponencias</a>
+        <a href="#">Concursos</a>
+
+        <a
+          class="btn btn--primary btn--sm"
+          href="#"
+        >
+          Ingresar
+        </a>
+      </nav>
+
+    </div>
+  </header>
+
+
+  <main id="contenido">
+
+    <section class="hero">
+      <div class="container">
+
+        <div class="hero__content">
+
+          <span class="hero__eyebrow">
+            PRECONGRESO · Rumbo al CONEIC 2027
+          </span>
+
+          <h1>
+            Aniversario de la Facultad de Ingeniería Civil
+          </h1>
+
+          <p>
+            Una antesala institucional hacia el XXXIV CONEIC
+            Huancayo 2027.
+          </p>
+
+          <div class="hero__cta">
+
+            <button class="btn btn--secondary">
+              Ver cronograma
+            </button>
+
+            <button class="btn btn--ghost" style="color:#fff;">
+              Conocer más
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <section class="section">
+      <div class="container">
+
+        <header class="section-head">
+          <span class="section-head__eyebrow">
+            COMPONENTES
+          </span>
+
+          <h2>
+            Sistema visual compartido
+          </h2>
+
+          <p>
+            Ejemplos de los elementos que pueden reutilizar los
+            módulos del proyecto.
+          </p>
+        </header>
+
+
+        <div class="grid grid--3">
+
+          <article class="card">
+            <div class="card__body">
+
+              <span class="card__eyebrow">
+                Ponencia
+              </span>
+
+              <h3 class="card__title">
+                Ingeniería y desarrollo
+              </h3>
+
+              <p>
+                Ejemplo de tarjeta utilizada en actividades.
+              </p>
+
+              <span class="badge badge--available">
+                Disponible
+              </span>
+
+            </div>
+          </article>
+
+
+          <article class="card">
+            <div class="card__body">
+
+              <span class="card__eyebrow">
+                Concurso
+              </span>
+
+              <h3 class="card__title">
+                Concurso por equipos
+              </h3>
+
+              <p>
+                Ejemplo de estado con cupos limitados.
+              </p>
+
+              <span class="badge badge--almost">
+                Últimos cupos
+              </span>
+
+            </div>
+          </article>
+
+
+          <article class="card">
+            <div class="card__body">
+
+              <span class="card__eyebrow">
+                Certificado
+              </span>
+
+              <h3 class="card__title">
+                Participación
+              </h3>
+
+              <p>
+                Disponible cuando se cumple la asistencia.
+              </p>
+
+              <span class="badge badge--closed">
+                No disponible
+              </span>
+
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+
+    <section class="section section--alt">
+      <div class="container">
+
+        <div class="grid grid--2">
+
+          <div>
+
+            <header class="section-head">
+              <span class="section-head__eyebrow">
+                FORMULARIOS
+              </span>
+
+              <h2>
+                Registro
+              </h2>
+            </header>
+
+            <div class="card">
+              <div class="card__body">
+
+                <div class="form-field">
+                  <label for="nombre">
+                    Nombres
+                  </label>
+
+                  <input
+                    id="nombre"
+                    type="text"
+                    placeholder="Tus nombres"
+                  >
+                </div>
+
+                <div class="form-field">
+                  <label for="correo">
+                    Correo
+                  </label>
+
+                  <input
+                    id="correo"
+                    type="email"
+                    placeholder="nombre@correo.com"
+                  >
+                </div>
+
+                <button class="btn btn--primary btn--block">
+                  Crear cuenta
+                </button>
+
+              </div>
+            </div>
+
+          </div>
+
+
+          <div>
+
+            <header class="section-head">
+              <span class="section-head__eyebrow">
+                ESTADÍSTICAS
+              </span>
+
+              <h2>
+                Resumen
+              </h2>
+            </header>
+
+            <div class="grid grid--2">
+
+              <div class="dash-card">
+                <div class="dash-card__value">
+                  350
+                </div>
+                <p>Participantes</p>
+              </div>
+
+              <div class="dash-card">
+                <div class="dash-card__value">
+                  18
+                </div>
+                <p>Ponencias</p>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <section class="section">
+      <div class="container">
+
+        <header class="section-head">
+          <span class="section-head__eyebrow">
+            CRONOGRAMA
+          </span>
+
+          <h2>
+            Línea de tiempo
+          </h2>
+        </header>
+
+        <div class="timeline-strip">
+
+          <div class="timeline-item">
+            <h3>08:00 h · Registro</h3>
+            <p>
+              Ingreso y control de participantes.
+            </p>
+          </div>
+
+          <div class="timeline-item">
+            <h3>09:00 h · Ponencia magistral</h3>
+            <p>
+              Auditorio principal.
+            </p>
+          </div>
+
+          <div class="timeline-item">
+            <h3>11:00 h · Concurso</h3>
+            <p>
+              Actividad por equipos.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <section class="section section--alt">
+      <div class="container">
+
+        <header class="section-head">
+          <span class="section-head__eyebrow">
+            TABLA
+          </span>
+
+          <h2>
+            Reporte de asistencia
+          </h2>
+        </header>
+
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+
+            <thead>
+              <tr>
+                <th>Participante</th>
+                <th>Actividad</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr>
+                <td>Participante de prueba</td>
+                <td>Ponencia magistral</td>
+                <td>
+                  <span class="badge badge--available">
+                    Asistió
+                  </span>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Participante de prueba 2</td>
+                <td>Ponencia magistral</td>
+                <td>
+                  <span class="badge badge--almost">
+                    Parcial
+                  </span>
+                </td>
+              </tr>
+
+            </tbody>
+
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+
+      <div class="stack">
+        <strong>
+          Facultad de Ingeniería Civil
+        </strong>
+
+        <p>
+          Universidad Nacional del Centro del Perú
+        </p>
+      </div>
+
+      <div class="stack">
+        <h4>Navegación</h4>
+        <a href="#">Evento</a>
+        <a href="#">Ponencias</a>
+      </div>
+
+      <div class="stack">
+        <h4>Participantes</h4>
+        <a href="#">Ingresar</a>
+        <a href="#">Certificados</a>
+      </div>
+
+    </div>
+  </footer>
+
+
+  <div class="demo-toolbar">
+
+    <button
+      class="btn btn--secondary btn--sm"
+      id="modoOscuro"
+    >
+      Tema oscuro
+    </button>
+
+    <button
+      class="btn btn--primary btn--sm"
+      id="toastDemo"
+    >
+      Mostrar aviso
+    </button>
+
+  </div>
+
+
+  <script type="module">
+    import {
+      aplicarTema,
+      activarTemaOscuro,
+    } from './configuracion/tema.js';
+
+    import {
+      showToast,
+    } from './utilidades/dom.js';
+
+    aplicarTema();
+
+    let oscuro = false;
+
+    document
+      .getElementById('modoOscuro')
+      .addEventListener('click', () => {
+        oscuro = !oscuro;
+        activarTemaOscuro(oscuro);
+      });
+
+    document
+      .getElementById('toastDemo')
+      .addEventListener('click', () => {
+        showToast(
+          'Este es un mensaje reutilizable.',
+          'success'
+        );
+      });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,120 @@
+/* ==========================================================
+   SISTEMA VISUAL COMPARTIDO - ANIVERSARIO FIC
+   Archivo: variables.css
+
+   REGLA:
+   Si se cambia la identidad visual del proyecto, se cambia aquí.
+   Los módulos NO deberían inventar colores o tipografías nuevas.
+   ========================================================== */
+
+:root {
+    /* -------------------------------------------------------
+       IDENTIDAD
+       Paleta base profesional: marca oscura + acento + dorado.
+       Si la organización define colores oficiales distintos,
+       solo se reemplazan estas variables.
+       ------------------------------------------------------- */
+    --color-marca-950: #071827;
+    --color-marca-900: #0b2239;
+    --color-marca-800: #123552;
+
+    --color-primario-700: #075985;
+    --color-primario-600: #0284c7;
+    --color-primario-500: #0ea5e9;
+    --color-primario-100: #e0f2fe;
+    --color-primario-50: #f0f9ff;
+
+    --color-acento-700: #9a6a12;
+    --color-acento-600: #b98118;
+    --color-acento-500: #d4a62a;
+    --color-acento-100: #f9edc7;
+
+    /* Neutros */
+    --color-fondo: #f5f7fa;
+    --color-superficie: #ffffff;
+    --color-superficie-secundaria: #eef2f6;
+    --color-borde: #d7dee7;
+    --color-borde-fuerte: #aeb9c7;
+
+    --color-texto: #172033;
+    --color-texto-secundario: #5b6678;
+    --color-texto-inverso: #ffffff;
+
+    /* Estados */
+    --color-exito: #15803d;
+    --color-exito-fondo: #ecfdf3;
+
+    --color-advertencia: #a16207;
+    --color-advertencia-fondo: #fffbeb;
+
+    --color-error: #b42318;
+    --color-error-fondo: #fef3f2;
+
+    --color-info: #0369a1;
+    --color-info-fondo: #f0f9ff;
+
+    /* Tipografía */
+    --fuente-principal:
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    --tamano-xs: 0.75rem;
+    --tamano-sm: 0.875rem;
+    --tamano-base: 1rem;
+    --tamano-lg: 1.125rem;
+    --tamano-xl: 1.25rem;
+    --tamano-2xl: 1.5rem;
+    --tamano-3xl: 2rem;
+    --tamano-4xl: 2.75rem;
+
+    --peso-normal: 400;
+    --peso-medio: 500;
+    --peso-semibold: 600;
+    --peso-bold: 700;
+
+    --linea-normal: 1.55;
+
+    /* Espaciado */
+    --espacio-1: 0.25rem;
+    --espacio-2: 0.5rem;
+    --espacio-3: 0.75rem;
+    --espacio-4: 1rem;
+    --espacio-5: 1.25rem;
+    --espacio-6: 1.5rem;
+    --espacio-8: 2rem;
+    --espacio-10: 2.5rem;
+    --espacio-12: 3rem;
+    --espacio-16: 4rem;
+
+    /* Bordes */
+    --radio-sm: 0.5rem;
+    --radio-md: 0.75rem;
+    --radio-lg: 1rem;
+    --radio-xl: 1.5rem;
+    --radio-pill: 999px;
+
+    /* Sombras */
+    --sombra-sm:
+        0 1px 2px rgba(7, 24, 39, 0.06);
+
+    --sombra-md:
+        0 8px 24px rgba(7, 24, 39, 0.10);
+
+    --sombra-lg:
+        0 18px 45px rgba(7, 24, 39, 0.14);
+
+    /* Layout */
+    --ancho-contenido: 1180px;
+    --alto-cabecera: 72px;
+
+    /* Animación */
+    --transicion-rapida: 150ms ease;
+    --transicion-normal: 220ms ease;
+
+    /* Focus accesible */
+    --focus-ring:
+        0 0 0 3px rgba(14, 165, 233, 0.28);
+}
