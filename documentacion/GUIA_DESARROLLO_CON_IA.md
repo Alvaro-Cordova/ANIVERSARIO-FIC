@@ -33,13 +33,8 @@ Función: permitir que un usuario se inscriba a una ponencia.
 
 No pedir solamente: “Hazme un sistema de ponencias completo”.
 
-## 3. Prompt recomendado
+## 3. Prompt recomendado (instrucciones para la IA)
 
-Prompt recomendado 1:
-
-"Estoy trabajando en un proyecto HTML, CSS y JavaScript organizado por módulos. Mi módulo es [NOMBRE DEL MODULO]. Debes modificar únicamente los archivos de este módulo. No crees otra conexión a Supabase, no dupliques funciones existentes y no modifiques archivos pertenecientes a otros módulos. Si necesitas una función compartida, indícame primero dónde debería colocarse."
-
-prompt recomendado 2:
 Estoy trabajando en una plataforma web creada con HTML, CSS, JavaScript y Supabase.
 
 El proyecto está dividido en módulos.
@@ -68,14 +63,24 @@ REGLAS:
 8. Antes de darme código, indícame exactamente en qué archivo debo colocarlo.
 9. Si debes reemplazar código, dime qué parte debo reemplazar.
 10. No cambies la estructura del proyecto sin indicármelo primero.
+11. No uses service_role.
+12. No desactives RLS.
+13. No insertes directamente en tablas si existe una función RPC.
+14. No modifiques funciones SQL existentes sin indicármelo primero.
+15. Si la parte de diseño (modulos - informacion o compartido-codigo reutilizable) no tienen definido el diseño final que tendra toda la pagina, no hacer el archivo .css (hacer recordar al usuario). Cuando se haya comprobado que si existe un diseño, puedes hacer el apartado visual sin problemas. De todas maneras dejalo configurado ya para que cuando el diseño este listo, automaticamente el archivo css se actualice (de ser posible)
 
-Quiero implementar lo siguiente:
+Quiero implementar lo siguiente: (mas informacion ver los LEEME.md de cada apartado de modulo)
 
-[EXPLICAR FUNCIÓN]
+[EXPLICAR FUNCIÓN] 
 
-Antes de darme código, indícame exactamente en qué archivo debo colocarlo
+Antes de darme código:
+1. dime qué archivo debo modificar;
+2. dime si reemplazo o agrego código (si solo se modifica una parte del codigo, de preferencia reenviarlo de nuevo porque es molesto estar buscando donde exactamente se debe colocar);
+3. utiliza únicamente las RPC documentadas en GUIA_CONEXION_SUPABASE_V3_2_1.md. (de ser necesario utilizar RPC no documentadas pero justificar el porque y avisar al desarrollador)
+4. Indicame que si la instruccion que te di no se sale fuera de mis funciones como desarrollador, en caso lo haga, dime el porque no entra a mis funciones y como continuo avanzando solamente con mi parte para no desviarme.
+5. En caso detectes que alguna parte de el codigo que te estoy pidiendo se pueda utilizar en la carpeta compartido-codigo reutilizable o en la carpeta recursos, añade instrucciones para colocarlos ahi, pero ya sabes que solamente hay codigo exclusivo que debe ir en cada carpeta y no se puede duplicar en otras. 
 
-Y adjuntas todos los documentos NECESARIOS para que la IA pueda hacerlo con la mayor calidad posible y para evitar duplicados, confusiones, etc.
+Y adjuntas todos los documentos NECESARIOS para que la IA pueda hacerlo con la mayor calidad posible y para evitar duplicados, confusiones, etc. (ADJUNTAR REPOSITORIO Y DECIRLE QUE LO LEA, LUEGO ADJUNTAR ESTE DOCUMENTO Y GUIA_CONEXION_SUPABASE_V3_2_1.md)
 
 ## 4. Dónde colocar cada tipo de código
 

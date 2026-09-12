@@ -1318,6 +1318,8 @@ sesiones_presencia
 
 certificados
 → certificados emitidos
+
+y otras tablas que se podra ver mas a detalle en modulos/autenticacion o ver base de datos
 ```
 
 ---
@@ -1730,17 +1732,17 @@ No uses service_role.
 No desactives RLS.
 No insertes directamente en tablas si existe una función RPC.
 No modifiques funciones SQL existentes sin indicármelo primero.
-Si la parte de diseño (modulos - informacion o compartido-codigo reutilizable) no tienen definido el diseño final que tendra toda la pagina, no hacer el archivo .css (hacer recordar al usuario). Cuando se haya comprobado que si existe un diseño, puedes hacer el apartado visual sin problemas.
+Si la parte de diseño (modulos - informacion o compartido-codigo reutilizable) no tienen definido el diseño final que tendra toda la pagina, no hacer el archivo .css (hacer recordar al usuario). Cuando se haya comprobado que si existe un diseño, puedes hacer el apartado visual sin problemas. De todas maneras dejalo configurado ya para que cuando el diseño este listo, automaticamente el archivo css se actualice.
 
 Antes de darme código:
 1. dime qué archivo debo modificar;
-2. dime si reemplazo o agrego código;
+2. dime si reemplazo o agrego código (si solo se modifica una parte del codigo, de preferencia reenviarlo de nuevo porque es molesto estar buscando donde exactamente se debe colocar);
 3. utiliza únicamente las RPC documentadas en GUIA_CONEXION_SUPABASE_V3_2_1.md.
 4. Indicame que si la instruccion que te di no se sale fuera de mis funciones como desarrollador, en caso lo haga, dime el porque no entra a mis funciones y como continuo avanzando solamente con mi parte.
+5. En caso detectes que alguna parte de el codigo que te estoy pidiendo se pueda utilizar en la carpeta compartido-codigo reutilizable o en la carpeta recursos, añade instrucciones para colocarlos ahi, pero ya sabes que solamente hay codigo exclusivo que debe ir en cada carpeta y no se puede duplicar en otras. 
 ```
 
 ---
-
 # 24. ANTES DE HACER COMMIT
 
 Cada desarrollador debe comprobar:
