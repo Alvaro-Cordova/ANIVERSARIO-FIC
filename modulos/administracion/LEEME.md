@@ -17,13 +17,13 @@ datos.js
 
 Panel administrativo para consultar:
 
-- usuarios;
-- ponencias;
-- concursos;
+- usuarios; (cualquier usuario puede consultar su asistencia)
+- ponencias; (cualquier usuario puede consultar su asistencia)
+- concursos; (leer archivos pdf, que la base de datos lo almacene los archivos que se le solicita al usuario para poder inscribirse )
 - inscripciones;
 - asistencia;
 - certificados.
-- configurar funciones solo para administradores.
+- configurar funciones solo para administradores y control (administradores pueden modificar el sistema, la pagina, en general tienen acceso a toda la pagina sin restricciones incluyendo los mismos permisos que tiene control. Los de control son solamente gente que pueda consultar inscripciones a ponentes - concursos, descargar listas excel de asistencias, que usuarios se registraron, si estan aptos para generarles certificado, si realizaron la paga para el certificado de paga y el sistema registra si pagaron o no, pero no puede modificar / eliminar la pagina o sistema)
 
 También podrá incorporar funciones básicas de administración cuando sean necesarias.
 

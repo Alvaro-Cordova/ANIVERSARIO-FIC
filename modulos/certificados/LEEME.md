@@ -16,10 +16,10 @@ datos.js
 
 ## Qué debe desarrollar
 
-- Visualización de certificados disponibles.
+- Visualización de certificados disponibles. (hay 2 tipos de certificado: gratuito por asistencias y de paga)
 - Comprobación de requisitos.
-- Generación del certificado.
-- Creación de PDF.
+- Generación del certificado. (solamente para el certificado gratuito, el de paga se entregara fisicamente firmado por la facultad)
+- Creación de PDF. (certificado gratuito por asistencias)
 - Descarga.
 - Código único de certificado.
 - Verificación del certificado.
