@@ -1,19 +1,51 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear cuenta — Aniversario FIC</title>
-    <link rel="stylesheet" href="estilos.css">
+
+
+    <title>
+        Crear cuenta — Aniversario FIC
+    </title>
+
+
+    <link
+        rel="stylesheet"
+        href="estilos.css"
+    >
+
 </head>
+
+
+
 <body>
+
+
     <main class="auth-contenedor">
+
+
         <section class="auth-tarjeta">
-            <h1>Crear cuenta</h1>
+
+
+            <h1>
+                Crear cuenta
+            </h1>
+
+
 
             <p class="auth-subtitulo">
+
                 Regístrate para participar en el evento.
+
             </p>
+
+
+
+
 
             <p
                 id="mensaje-registro"
@@ -21,241 +53,674 @@
                 hidden
             ></p>
 
-            <form id="formulario-registro" novalidate>
+
+
+
+
+
+
+            <form
+                id="formulario-registro"
+                novalidate
+            >
+
+
+
+
 
                 <!-- ==========================================
                      Nombres y apellidos
-                     ========================================== -->
+                =========================================== -->
+
 
                 <div class="auth-fila">
+
+
                     <div>
-                        <label for="reg-nombres">
+
+
+                        <label
+                            for="reg-nombres"
+                        >
+
                             Nombres
+
                         </label>
 
+
+
                         <input
+
                             type="text"
+
                             id="reg-nombres"
+
                             name="nombres"
+
                             autocomplete="given-name"
+
                             required
+
                         >
+
+
                     </div>
+
+
+
+
 
                     <div>
-                        <label for="reg-apellidos">
+
+
+                        <label
+                            for="reg-apellidos"
+                        >
+
                             Apellidos
+
                         </label>
 
+
+
                         <input
+
                             type="text"
+
                             id="reg-apellidos"
+
                             name="apellidos"
+
                             autocomplete="family-name"
+
                             required
+
                         >
+
+
                     </div>
+
+
+
                 </div>
+
+
+
+
+
+
+
 
 
                 <!-- ==========================================
                      Correo
-                     ========================================== -->
+                =========================================== -->
 
-                <label for="reg-correo">
+
+                <label
+                    for="reg-correo"
+                >
+
                     Correo
+
                 </label>
 
+
+
+
                 <input
+
                     type="email"
+
                     id="reg-correo"
+
                     name="correo"
+
                     autocomplete="email"
+
                     required
+
                 >
+
+
+
+
+
 
 
                 <!-- ==========================================
                      Contraseña
-                     ========================================== -->
+                =========================================== -->
+
 
                 <div class="auth-fila">
+
+
                     <div>
-                        <label for="reg-password">
+
+
+
+                        <label
+                            for="reg-password"
+                        >
+
                             Contraseña
+
                         </label>
 
+
+
                         <input
+
                             type="password"
+
                             id="reg-password"
+
                             name="password"
+
                             autocomplete="new-password"
+
                             required
+
                         >
+
+
+
                     </div>
+
+
+
+
+
+
 
                     <div>
-                        <label for="reg-confirmar-password">
+
+
+
+                        <label
+                            for="reg-confirmar-password"
+                        >
+
                             Confirmar contraseña
+
                         </label>
 
+
+
+
                         <input
+
                             type="password"
+
                             id="reg-confirmar-password"
+
                             name="confirmarPassword"
+
                             autocomplete="new-password"
+
                             required
+
                         >
+
+
+
                     </div>
+
+
+
                 </div>
+
+
+
+
+
+
+
+
+                <!-- ==========================================
+                     Teléfono
+                     
+                     Formato Perú:
+                     9 dígitos
+                     Empieza con 9
+                =========================================== -->
+
+
+                <label
+                    for="reg-telefono"
+                >
+
+                    Teléfono
+
+                </label>
+
+
+
+
+                <input
+
+                    type="tel"
+
+                    id="reg-telefono"
+
+                    name="telefono"
+
+                    placeholder="Ejemplo: 987654321"
+
+                    maxlength="9"
+
+                    autocomplete="tel"
+
+                    required
+
+                >
+
+
+
+
+
 
 
                 <!-- ==========================================
                      Tipo de participante
-                     
-                     Este campo NO representa el rol de seguridad.
-                     El rol del usuario será gestionado únicamente
-                     desde el backend.
-                     ========================================== -->
 
-                <label for="reg-tipo-participante">
+                     No representa rol de seguridad.
+                     Solo define información del participante.
+                =========================================== -->
+
+
+                <label
+                    for="reg-tipo-participante"
+                >
+
                     Tipo de participante
+
                 </label>
 
+
+
+
                 <select
+
                     id="reg-tipo-participante"
+
                     name="tipoParticipante"
+
                     required
+
                 >
+
+
+
                     <option value="">
+
                         Selecciona una opción
+
                     </option>
+
+
 
                     <option value="ESTUDIANTE">
+
                         Estudiante
+
                     </option>
+
+
+
 
                     <option value="OTRO">
+
                         Otro
+
                     </option>
+
+
+
                 </select>
-
-
                 <!-- ==========================================
                      Datos exclusivos para estudiantes
+                =========================================== -->
 
-                     interfaz.js mostrará esta sección únicamente
-                     cuando se seleccione "Estudiante".
-                     ========================================== -->
 
                 <div
+
                     id="campos-estudiante"
+
                     class="auth-fila"
+
                     hidden
+
                 >
+
+
+
                     <div>
-                        <label for="reg-codigo-matricula">
+
+
+
+                        <label
+                            for="reg-codigo-matricula"
+                        >
+
                             Código de matrícula
+
                         </label>
+
+
+
 
                         <input
+
                             type="text"
+
                             id="reg-codigo-matricula"
+
                             name="codigoMatricula"
+
                             disabled
+
                         >
+
+
+
                     </div>
+
+
+
+
+
+
 
                     <div>
-                        <label for="reg-semestre">
+
+
+
+                        <label
+                            for="reg-semestre"
+                        >
+
                             Semestre
+
                         </label>
 
+
+
+
+
                         <select
+
                             id="reg-semestre"
+
                             name="semestre"
+
                             disabled
+
                         >
+
+
+
                             <option value="">
+
                                 Selecciona
+
                             </option>
 
-                            <option value="I">I</option>
-                            <option value="II">II</option>
-                            <option value="III">III</option>
-                            <option value="IV">IV</option>
-                            <option value="V">V</option>
-                            <option value="VI">VI</option>
-                            <option value="VII">VII</option>
-                            <option value="VIII">VIII</option>
-                            <option value="IX">IX</option>
-                            <option value="X">X</option>
+
+
+
+                            <option value="I">
+
+                                I
+
+                            </option>
+
+
+
+
+                            <option value="II">
+
+                                II
+
+                            </option>
+
+
+
+
+                            <option value="III">
+
+                                III
+
+                            </option>
+
+
+
+
+                            <option value="IV">
+
+                                IV
+
+                            </option>
+
+
+
+
+                            <option value="V">
+
+                                V
+
+                            </option>
+
+
+
+
+                            <option value="VI">
+
+                                VI
+
+                            </option>
+
+
+
+
+                            <option value="VII">
+
+                                VII
+
+                            </option>
+
+
+
+
+                            <option value="VIII">
+
+                                VIII
+
+                            </option>
+
+
+
+
+                            <option value="IX">
+
+                                IX
+
+                            </option>
+
+
+
+
+                            <option value="X">
+
+                                X
+
+                            </option>
+
+
+
                         </select>
+
+
+
                     </div>
+
+
+
                 </div>
 
 
+
+
+
+
+
+
+
                 <!-- ==========================================
-                     Datos para participantes que no son estudiantes
+                     Datos para participantes OTRO
+                =========================================== -->
 
-                     Por ejemplo:
-                     - Docente
-                     - Egresado
-                     - Invitado
-                     - Otro participante
 
-                     interfaz.js mostrará esta sección únicamente
-                     cuando se seleccione "Otro".
-                     ========================================== -->
 
                 <div
+
                     id="campos-otro"
+
                     hidden
+
                 >
-                    <label for="reg-detalle-tipo">
+
+
+
+                    <label
+                        for="reg-detalle-tipo"
+                    >
+
                         Especifique
+
                     </label>
 
+
+
+
                     <input
+
                         type="text"
+
                         id="reg-detalle-tipo"
+
                         name="detalleTipo"
+
                         placeholder="Ej. Docente, egresado, invitado"
+
                         disabled
+
                     >
+
+
+
                 </div>
 
 
+
+
+
+
+
+
+
                 <!-- ==========================================
-                     Botón de registro
-                     ========================================== -->
+                     Botón registro
+                =========================================== -->
+
+
 
                 <button
+
                     type="submit"
+
                     id="btn-registro"
+
                     class="boton-primario"
+
                 >
+
+
                     Crear cuenta
+
+
                 </button>
+
+
+
+
+
             </form>
 
 
+
+
+
+
+
+
             <!-- ==============================================
-                 Enlace a inicio de sesión
-                 ============================================== -->
+                 Enlace inicio sesión
+            =============================================== -->
+
+
 
             <p class="auth-enlace">
+
+
                 ¿Ya tienes cuenta?
+
+
+
                 <a href="iniciar-sesion.html">
+
                     Inicia sesión
+
                 </a>
+
+
             </p>
+
+
+
+
+
+
+
         </section>
+
+
+
+
+
     </main>
 
+
+
+
+
+
+
     <script
+
         type="module"
+
         src="interfaz.js"
+
     ></script>
+
+
+
+
+
 </body>
+
+
+
 </html>

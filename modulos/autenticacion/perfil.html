@@ -1,80 +1,496 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi perfil — Aniversario FIC</title>
+
+    <title>
+        Mi perfil — Aniversario FIC
+    </title>
+
     <link rel="stylesheet" href="estilos.css">
+
 </head>
+
+
 <body>
+
+
     <main class="auth-contenedor">
+
+
         <section class="auth-tarjeta auth-tarjeta-ancha">
-            <h1>Mi perfil</h1>
 
-            <p id="mensaje-perfil" class="mensaje" hidden></p>
 
-            <div id="perfil-contenido" hidden>
+            <h1>
+                Mi perfil
+            </h1>
+
+
+
+            <p
+                id="mensaje-perfil"
+                class="mensaje"
+                hidden
+            ></p>
+
+
+
+
+
+            <div
+                id="perfil-contenido"
+                hidden
+            >
+
+
+
+                <!-- =================================
+                     RESUMEN DEL PERFIL
+                ================================== -->
+
+
                 <div class="perfil-resumen">
+
+
                     <div>
-                        <span class="perfil-etiqueta">Nombres</span>
-                        <span id="perfil-nombres" class="perfil-valor"></span>
+
+                        <span class="perfil-etiqueta">
+                            Nombres
+                        </span>
+
+
+                        <span
+                            id="perfil-nombres"
+                            class="perfil-valor"
+                        ></span>
+
                     </div>
+
+
+
+
                     <div>
-                        <span class="perfil-etiqueta">Apellidos</span>
-                        <span id="perfil-apellidos" class="perfil-valor"></span>
+
+                        <span class="perfil-etiqueta">
+                            Apellidos
+                        </span>
+
+
+                        <span
+                            id="perfil-apellidos"
+                            class="perfil-valor"
+                        ></span>
+
                     </div>
+
+
+
+
                     <div>
-                        <span class="perfil-etiqueta">Correo</span>
-                        <span id="perfil-correo" class="perfil-valor"></span>
+
+                        <span class="perfil-etiqueta">
+                            Correo
+                        </span>
+
+
+                        <span
+                            id="perfil-correo"
+                            class="perfil-valor"
+                        ></span>
+
                     </div>
+
+
+
+
                     <div>
-                        <span class="perfil-etiqueta">Tipo de usuario</span>
-                        <span id="perfil-rol" class="perfil-valor"></span>
+
+                        <span class="perfil-etiqueta">
+                            Rol
+                        </span>
+
+
+                        <span
+                            id="perfil-rol"
+                            class="perfil-valor"
+                        ></span>
+
                     </div>
+
+
                 </div>
+
+
+
+
 
                 <hr>
 
-                <h2>Editar información</h2>
-                <form id="formulario-perfil" novalidate>
+
+
+
+
+                <h2>
+                    Editar información
+                </h2>
+
+
+
+
+                <form
+                    id="formulario-perfil"
+                    novalidate
+                >
+
+
+
+
+
+                    <!-- ==========================
+                         DATOS PERSONALES
+                    =========================== -->
+
+
                     <div class="auth-fila">
+
+
                         <div>
-                            <label for="perfil-tipo-documento">Tipo de documento</label>
-                            <select id="perfil-tipo-documento" name="tipoDocumento">
-                                <option value="DNI">DNI</option>
-                                <option value="CE">Carné de extranjería</option>
-                                <option value="PASAPORTE">Pasaporte</option>
-                                <option value="OTRO">Otro</option>
+
+
+                            <label
+                                for="perfil-nombres-editar"
+                            >
+                                Nombres
+                            </label>
+
+
+                            <input
+                                type="text"
+                                id="perfil-nombres-editar"
+                                name="nombres"
+                            >
+
+
+                        </div>
+
+
+
+
+
+                        <div>
+
+
+                            <label
+                                for="perfil-apellidos-editar"
+                            >
+                                Apellidos
+                            </label>
+
+
+                            <input
+                                type="text"
+                                id="perfil-apellidos-editar"
+                                name="apellidos"
+                            >
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+
+
+
+                    <label
+                        for="perfil-telefono"
+                    >
+                        Teléfono
+                    </label>
+
+
+                    <input
+                        type="tel"
+                        id="perfil-telefono"
+                        name="telefono"
+                        maxlength="9"
+                        placeholder="Ejemplo: 987654321"
+                    >
+
+
+
+
+
+
+
+
+                    <!-- ==========================
+                         TIPO PARTICIPANTE
+                    =========================== -->
+
+
+                    <label
+                        for="perfil-tipo-participante"
+                    >
+                        Tipo de participante
+                    </label>
+
+
+                    <select
+                        id="perfil-tipo-participante"
+                        name="tipoParticipante"
+                    >
+
+
+                        <option value="ESTUDIANTE">
+                            Estudiante
+                        </option>
+
+
+                        <option value="OTRO">
+                            Otro
+                        </option>
+
+
+                    </select>
+
+
+
+
+
+
+
+
+                    <!-- ==========================
+                         CAMPOS ESTUDIANTE
+                    =========================== -->
+
+
+                    <div
+                        id="perfil-campos-estudiante"
+                        class="auth-fila"
+                    >
+
+
+
+                        <div>
+
+
+                            <label
+                                for="perfil-codigo-matricula"
+                            >
+                                Código de matrícula
+                            </label>
+
+
+                            <input
+                                type="text"
+                                id="perfil-codigo-matricula"
+                                name="codigoMatricula"
+                            >
+
+
+                        </div>
+
+
+
+
+
+
+
+                        <div>
+
+
+                            <label
+                                for="perfil-semestre"
+                            >
+                                Semestre
+                            </label>
+
+
+
+                            <select
+                                id="perfil-semestre"
+                                name="semestre"
+                            >
+
+
+                                <option value="">
+                                    Selecciona
+                                </option>
+
+
+                                <option value="I">
+                                    I
+                                </option>
+
+
+                                <option value="II">
+                                    II
+                                </option>
+
+
+                                <option value="III">
+                                    III
+                                </option>
+
+
+                                <option value="IV">
+                                    IV
+                                </option>
+
+
+                                <option value="V">
+                                    V
+                                </option>
+
+
+                                <option value="VI">
+                                    VI
+                                </option>
+
+
+                                <option value="VII">
+                                    VII
+                                </option>
+
+
+                                <option value="VIII">
+                                    VIII
+                                </option>
+
+
+                                <option value="IX">
+                                    IX
+                                </option>
+
+
+                                <option value="X">
+                                    X
+                                </option>
+
+
                             </select>
+
+
+
                         </div>
-                        <div>
-                            <label for="perfil-documento">Número de documento</label>
-                            <input type="text" id="perfil-documento" name="documento">
-                        </div>
+
+
+
                     </div>
 
-                    <label for="perfil-telefono">Teléfono</label>
-                    <input type="tel" id="perfil-telefono" name="telefono">
 
-                    <div class="auth-fila">
-                        <div>
-                            <label for="perfil-institucion">Institución</label>
-                            <input type="text" id="perfil-institucion" name="institucion">
-                        </div>
-                        <div>
-                            <label for="perfil-carrera">Carrera</label>
-                            <input type="text" id="perfil-carrera" name="carrera">
-                        </div>
+
+
+
+
+
+
+
+                    <!-- ==========================
+                         CAMPOS OTRO PARTICIPANTE
+                    =========================== -->
+
+
+                    <div
+                        id="perfil-campos-otro"
+                    >
+
+
+                        <label
+                            for="perfil-detalle-tipo"
+                        >
+                            Especifique
+                        </label>
+
+
+
+                        <input
+                            type="text"
+                            id="perfil-detalle-tipo"
+                            name="detalleTipo"
+                            placeholder="Ej. Docente, egresado, invitado"
+                        >
+
+
+
                     </div>
 
-                    <button type="submit" id="btn-guardar-perfil" class="boton-primario">Guardar cambios</button>
+
+
+
+
+
+
+
+                    <button
+                        type="submit"
+                        id="btn-guardar-perfil"
+                        class="boton-primario"
+                    >
+
+                        Guardar cambios
+
+                    </button>
+
+
+
+
                 </form>
 
-                <button type="button" id="btn-cerrar-sesion" class="boton-secundario">Cerrar sesión</button>
+
+
+
+
+
+
+                <button
+                    type="button"
+                    id="btn-cerrar-sesion"
+                    class="boton-secundario"
+                >
+
+                    Cerrar sesión
+
+                </button>
+
+
+
+
+
             </div>
+
+
+
         </section>
+
+
+
     </main>
 
-    <script type="module" src="interfaz.js"></script>
+
+
+
+
+
+
+    <script
+        type="module"
+        src="interfaz.js"
+    ></script>
+
+
+
 </body>
+
+
 </html>

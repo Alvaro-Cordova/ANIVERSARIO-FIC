@@ -1,16 +1,20 @@
 // ============================================================
 // modulos/autenticacion/interfaz.js
 //
-// Controla botones, formularios, mensajes y redirecciones de:
+// Controla botones, formularios y eventos del módulo Auth.
+//
+// Páginas:
 //   - iniciar-sesion.html
 //   - registro.html
 //   - recuperar-contrasena.html
 //   - actualizar-contrasena.html
 //   - perfil.html
 //
-// Nunca llama a supabase directamente: usa datos.js y
-// servicios/sesion.js.
+// Nunca llama directamente a Supabase.
+// Usa datos.js y servicios/sesion.js.
 // ============================================================
+
+
 
 import {
     registrarUsuario,
@@ -21,197 +25,372 @@ import {
     actualizarContrasena
 } from './datos.js'
 
+
+
 import {
     verificarSesion,
     cerrarSesion
 } from '../../servicios/sesion.js'
 
 
-// ------------------------------------------------------------
-// Utilidades de interfaz
-// ------------------------------------------------------------
 
-// Muestra un mensaje de error o éxito dentro de la página.
-function mostrarMensaje(elemento, texto, tipo = 'error') {
+
+
+// ============================================================
+// UTILIDADES GENERALES
+// ============================================================
+
+
+
+function mostrarMensaje(
+    elemento,
+    texto,
+    tipo = 'error'
+) {
+
     if (!elemento) return
 
+
     elemento.textContent = texto
-    elemento.classList.remove('mensaje-error', 'mensaje-exito')
+
+
+    elemento.classList.remove(
+        'mensaje-error',
+        'mensaje-exito'
+    )
+
+
     elemento.classList.add(
         tipo === 'exito'
             ? 'mensaje-exito'
             : 'mensaje-error'
     )
+
+
     elemento.hidden = false
+
 }
 
 
-// Limpia y oculta un mensaje mostrado anteriormente.
+
+
+
 function limpiarMensaje(elemento) {
+
     if (!elemento) return
 
+
     elemento.textContent = ''
+
     elemento.hidden = true
+
 }
 
 
-// Desactiva temporalmente un botón mientras se procesa una acción.
-function bloquearBoton(boton, textoCargando) {
+
+
+
+function bloquearBoton(
+    boton,
+    textoCargando
+) {
+
     if (!boton) return
+
 
     boton.disabled = true
-    boton.dataset.textoOriginal = boton.textContent
-    boton.textContent = textoCargando
+
+
+    boton.dataset.textoOriginal =
+        boton.textContent
+
+
+    boton.textContent =
+        textoCargando
+
 }
 
 
-// Reactiva un botón después de terminar una acción.
+
+
+
 function liberarBoton(boton) {
+
     if (!boton) return
 
+
     boton.disabled = false
+
+
     boton.textContent =
         boton.dataset.textoOriginal ||
         boton.textContent
+
 }
 
 
-// Comprueba si un valor está vacío.
+
+
+
 function campoVacio(valor) {
-    return !valor || valor.trim().length === 0
+
+    return (
+        !valor ||
+        valor.trim().length === 0
+    )
+
 }
 
 
-// Validación básica del formato de correo electrónico.
+
+
+
 function correoValido(correo) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)
+
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        .test(correo)
+
 }
 
 
-// Convierte algunos mensajes comunes de Supabase Auth
-// en mensajes más claros para el usuario.
+
+
+
+// ============================================================
+// VALIDACIÓN DE MATRÍCULA
+// Formato:
+// 10 números + 1 letra final
+//
+// Ejemplo:
+// 2026100000M
+// ============================================================
+
+
+function codigoMatriculaValido(codigo) {
+
+    return /^[0-9]{10}[A-Za-z]$/
+        .test(codigo)
+
+}
+
+function telefonoPeruValido(telefono) {
+
+    return /^9[0-9]{8}$/.test(telefono)
+
+}
+
+
+
 function mensajeDeError(error) {
+
     if (!error) {
+
         return 'Ocurrió un error inesperado.'
+
     }
 
-    const mensaje = error.message || ''
 
-    if (mensaje.includes('Invalid login credentials')) {
+
+    const mensaje =
+        error.message || ''
+
+
+
+    if (
+        mensaje.includes(
+            'Invalid login credentials'
+        )
+    ) {
+
         return 'Correo o contraseña incorrectos.'
+
     }
 
-    if (mensaje.includes('User already registered')) {
-        return 'Ya existe una cuenta registrada con ese correo.'
+
+
+    if (
+        mensaje.includes(
+            'User already registered'
+        )
+    ) {
+
+        return (
+            'Ya existe una cuenta registrada con ese correo.'
+        )
+
     }
 
-    if (mensaje.includes('Password should be at least')) {
-        return 'La contraseña debe tener al menos 6 caracteres.'
+
+
+    if (
+        mensaje.includes(
+            'Password should be at least'
+        )
+    ) {
+
+        return (
+            'La contraseña debe tener al menos 6 caracteres.'
+        )
+
     }
 
-    return mensaje || 'Ocurrió un error inesperado.'
+
+
+    return (
+        mensaje ||
+        'Ocurrió un error inesperado.'
+    )
+
 }
 
 
-// ------------------------------------------------------------
-// Página: registro.html
-// ------------------------------------------------------------
 
-// Controla el formulario utilizado para crear una cuenta.
-//
-// Los datos solicitados actualmente en la interfaz son:
-// nombres, apellidos, correo, contraseña,
-// confirmación de contraseña, código de matrícula y semestre.
-//
-// Confirmar contraseña solo se utiliza para comprobar que el
-// usuario escribió correctamente su contraseña. No se guarda.
-//
-// Código de matrícula y semestre todavía no se envían a Supabase
-// porque esas columnas aún no existen en public.perfiles.
-// Cuando Base de Datos las agregue, se incorporarán a datos.js.
+
+
+// ============================================================
+// PÁGINA: registro.html
+// ============================================================
+
+
+
 function inicializarRegistro() {
+
+
     const formulario =
-        document.getElementById('formulario-registro')
+        document.getElementById(
+            'formulario-registro'
+        )
+
+
 
     if (!formulario) return
 
+
+
+
     const mensaje =
-        document.getElementById('mensaje-registro')
+        document.getElementById(
+            'mensaje-registro'
+        )
+
+
 
     const boton =
-        document.getElementById('btn-registro')
+        document.getElementById(
+            'btn-registro'
+        )
 
 
-    // --------------------------------------------------------
-    // Tipo de participante
-    // --------------------------------------------------------
-    //
-    // El rol del sistema no se selecciona desde el registro.
-    // Todo registro público corresponde al asistente general.
-    //
-    // Este selector únicamente define el tipo de participante
-    // para solicitar los datos académicos correspondientes.
+
 
     const selectorTipo =
-        document.getElementById('reg-tipo-participante')
+        document.getElementById(
+            'reg-tipo-participante'
+        )
+
+
 
     const camposEstudiante =
-        document.getElementById('campos-estudiante')
+        document.getElementById(
+            'campos-estudiante'
+        )
+
+
 
     const camposOtro =
-        document.getElementById('campos-otro')
+        document.getElementById(
+            'campos-otro'
+        )
+
+
 
     const campoCodigoMatricula =
-        document.getElementById('reg-codigo-matricula')
+        document.getElementById(
+            'reg-codigo-matricula'
+        )
+
+
 
     const campoSemestre =
-        document.getElementById('reg-semestre')
+        document.getElementById(
+            'reg-semestre'
+        )
+
+
 
     const campoDetalleTipo =
-        document.getElementById('reg-detalle-tipo')
+        document.getElementById(
+            'reg-detalle-tipo'
+        )
+
+
+
 
 
     function actualizarCamposTipoParticipante() {
+
+
         const tipoParticipante =
             selectorTipo.value
 
+
+
         const esEstudiante =
             tipoParticipante === 'ESTUDIANTE'
+
+
 
         const esOtro =
             tipoParticipante === 'OTRO'
 
 
+
         camposEstudiante.hidden =
             !esEstudiante
+
+
 
         camposOtro.hidden =
             !esOtro
 
 
+
         campoCodigoMatricula.disabled =
             !esEstudiante
 
+
+
         campoSemestre.disabled =
             !esEstudiante
+
+
 
         campoDetalleTipo.disabled =
             !esOtro
 
 
-        // Si deja de ser estudiante, se limpian los datos
-        // académicos para evitar enviar información anterior.
+
+
         if (!esEstudiante) {
+
             campoCodigoMatricula.value = ''
+
             campoSemestre.value = ''
+
         }
 
 
-        // Si deja de ser "Otro", se limpia la descripción.
+
         if (!esOtro) {
+
             campoDetalleTipo.value = ''
+
         }
+
+
     }
+
+
 
 
     selectorTipo.addEventListener(
@@ -219,54 +398,94 @@ function inicializarRegistro() {
         actualizarCamposTipoParticipante
     )
 
+
+
     actualizarCamposTipoParticipante()
-
-
     formulario.addEventListener(
         'submit',
         async (evento) => {
+
+
             evento.preventDefault()
+
+
             limpiarMensaje(mensaje)
+
+
 
 
             const nombres =
                 document
-                    .getElementById('reg-nombres')
+                    .getElementById(
+                        'reg-nombres'
+                    )
                     .value
                     .trim()
+
+
 
             const apellidos =
                 document
-                    .getElementById('reg-apellidos')
+                    .getElementById(
+                        'reg-apellidos'
+                    )
                     .value
                     .trim()
+
+
 
             const correo =
                 document
-                    .getElementById('reg-correo')
+                    .getElementById(
+                        'reg-correo'
+                    )
                     .value
                     .trim()
+            
+            const telefono =
+                document
+                    .getElementById(
+                        'reg-telefono'
+                    )
+                    .value
+                    .trim()        
+
+
 
             const password =
                 document
-                    .getElementById('reg-password')
+                    .getElementById(
+                        'reg-password'
+                    )
                     .value
+
+
 
             const confirmarPassword =
                 document
-                    .getElementById('reg-confirmar-password')
+                    .getElementById(
+                        'reg-confirmar-password'
+                    )
                     .value
+
+
 
             const tipoParticipante =
                 selectorTipo.value
+
+
 
             const codigoMatricula =
                 campoCodigoMatricula
                     .value
                     .trim()
 
+
+
             const semestre =
                 campoSemestre.value
+
+
 
             const detalleTipo =
                 campoDetalleTipo
@@ -274,8 +493,9 @@ function inicializarRegistro() {
                     .trim()
 
 
-            // Todos los campos visibles del formulario
-            // son obligatorios.
+
+
+
             if (
                 campoVacio(nombres) ||
                 campoVacio(apellidos) ||
@@ -284,84 +504,201 @@ function inicializarRegistro() {
                 campoVacio(confirmarPassword) ||
                 campoVacio(tipoParticipante)
             ) {
+
+
                 mostrarMensaje(
                     mensaje,
                     'Completa todos los campos obligatorios.'
                 )
+
+
                 return
+
             }
 
 
-            // Validación básica del correo.
-            if (!correoValido(correo)) {
+
+
+
+            if (
+                !correoValido(correo)
+            ) {
+
+
                 mostrarMensaje(
                     mensaje,
                     'Ingresa un correo válido.'
                 )
+
+
                 return
+
+            }
+            if (
+                !telefonoPeruValido(telefono)
+            ) {
+
+                mostrarMensaje(
+                    mensaje,
+                    'El teléfono debe tener 9 dígitos y comenzar con 9.'
+                )
+
+
+                return
+
             }
 
 
-            // Supabase requiere como mínimo 6 caracteres
-            // para la contraseña con la configuración actual.
-            if (password.length < 6) {
+
+
+
+            if (
+                password.length < 6
+            ) {
+
+
                 mostrarMensaje(
                     mensaje,
                     'La contraseña debe tener al menos 6 caracteres.'
                 )
+
+
                 return
+
             }
 
 
-            // La confirmación solo valida que ambas
-            // contraseñas hayan sido escritas igual.
-            if (password !== confirmarPassword) {
+
+
+
+            if (
+                password !== confirmarPassword
+            ) {
+
+
                 mostrarMensaje(
                     mensaje,
                     'Las contraseñas no coinciden.'
                 )
+
+
                 return
+
             }
+
+
+
+
+
+
+
+            // ----------------------------------------
+            // Validación estudiante
+            // ----------------------------------------
 
 
             if (
                 tipoParticipante === 'ESTUDIANTE'
             ) {
+
+
                 if (
                     campoVacio(codigoMatricula)
                 ) {
+
+
                     mostrarMensaje(
                         mensaje,
                         'Ingresa tu código de matrícula.'
                     )
+
+
                     return
+
                 }
+
+
+
+
+
+                if (
+                    !codigoMatriculaValido(
+                        codigoMatricula
+                    )
+                ) {
+
+
+                    mostrarMensaje(
+                        mensaje,
+                        'El código de matrícula debe tener 10 números y una letra final.'
+                    )
+
+
+                    return
+
+                }
+
+
+
+
 
                 if (
                     campoVacio(semestre)
                 ) {
+
+
                     mostrarMensaje(
                         mensaje,
                         'Selecciona tu semestre.'
                     )
+
+
                     return
+
                 }
+
+
             }
+
+
+
+
+
+
+
+            // ----------------------------------------
+            // Validación otro participante
+            // ----------------------------------------
 
 
             if (
                 tipoParticipante === 'OTRO'
             ) {
+
+
                 if (
                     campoVacio(detalleTipo)
                 ) {
+
+
                     mostrarMensaje(
                         mensaje,
                         'Especifica tu tipo de participante.'
                     )
+
+
                     return
+
                 }
+
+
             }
+
+
+
+
+
+
 
 
             bloquearBoton(
@@ -370,64 +707,117 @@ function inicializarRegistro() {
             )
 
 
-            // Por ahora se envían únicamente los campos que
-            // la estructura actual de Supabase puede registrar.
-            //
-            // codigoMatricula y semestre se incorporarán cuando
-            // existan sus columnas correspondientes en perfiles.
+
+
+
+
+
+
             const resultado =
                 await registrarUsuario({
+
                     nombres,
+
                     apellidos,
+
                     correo,
+
                     password,
+
+                    telefono,
+
+
                     tipoParticipante,
+
 
                     codigoMatricula:
                         tipoParticipante === 'ESTUDIANTE'
                             ? codigoMatricula
                             : null,
 
+
                     semestre:
                         tipoParticipante === 'ESTUDIANTE'
                             ? semestre
                             : null,
 
+
                     detalleTipo:
                         tipoParticipante === 'OTRO'
                             ? detalleTipo
                             : null
+
                 })
 
 
-            liberarBoton(boton)
 
 
-            if (!resultado.ok) {
+
+
+
+            liberarBoton(
+                boton
+            )
+
+
+
+
+
+
+
+            if (
+                !resultado.ok
+            ) {
+
+
                 mostrarMensaje(
                     mensaje,
-                    mensajeDeError(resultado.error)
+                    mensajeDeError(
+                        resultado.error
+                    )
                 )
+
+
                 return
+
             }
 
 
-            // Si Supabase tiene activada la confirmación
-            // de correo, el usuario deberá confirmar su cuenta
-            // antes de poder iniciar sesión.
-            if (resultado.requiereConfirmacionCorreo) {
+
+
+
+
+
+            if (
+                resultado.requiereConfirmacionCorreo
+            ) {
+
+
                 mostrarMensaje(
                     mensaje,
                     'Cuenta creada. Revisa tu correo para confirmar tu cuenta antes de iniciar sesión.',
                     'exito'
                 )
 
+
+
                 formulario.reset()
+
+
 
                 actualizarCamposTipoParticipante()
 
+
+
                 return
+
+
             }
+
+
+
+
+
 
 
             mostrarMensaje(
@@ -437,75 +827,166 @@ function inicializarRegistro() {
             )
 
 
-            setTimeout(() => {
-                window.location.href = 'perfil.html'
-            }, 1200)
+
+
+
+
+            setTimeout(
+                () => {
+
+
+                    window.location.href =
+                        'perfil.html'
+
+
+                },
+                1200
+            )
+
+
+
         }
     )
+
+
+
 }
 
 
-// ------------------------------------------------------------
-// Página: iniciar-sesion.html
-// ------------------------------------------------------------
 
-// Controla el formulario de inicio de sesión.
+
+
+
+
+
+
+// ============================================================
+// PÁGINA: iniciar-sesion.html
+// ============================================================
+
+
+
 function inicializarLogin() {
+
+
     const formulario =
-        document.getElementById('formulario-login')
+        document.getElementById(
+            'formulario-login'
+        )
+
+
 
     if (!formulario) return
 
+
+
+
+
     const mensaje =
-        document.getElementById('mensaje-login')
+        document.getElementById(
+            'mensaje-login'
+        )
+
+
 
     const boton =
-        document.getElementById('btn-login')
+        document.getElementById(
+            'btn-login'
+        )
+
+
+
+
+
 
 
     formulario.addEventListener(
         'submit',
         async (evento) => {
+
+
             evento.preventDefault()
-            limpiarMensaje(mensaje)
+
+
+
+            limpiarMensaje(
+                mensaje
+            )
+
+
+
 
             const correo =
                 document
-                    .getElementById('login-correo')
+                    .getElementById(
+                        'login-correo'
+                    )
                     .value
                     .trim()
 
+
+
             const password =
                 document
-                    .getElementById('login-password')
+                    .getElementById(
+                        'login-password'
+                    )
                     .value
+
+
+
+
 
 
             if (
                 campoVacio(correo) ||
                 campoVacio(password)
             ) {
+
+
                 mostrarMensaje(
                     mensaje,
                     'Ingresa tu correo y tu contraseña.'
                 )
+
+
                 return
+
             }
 
 
-            if (!correoValido(correo)) {
+
+
+
+
+            if (
+                !correoValido(correo)
+            ) {
+
+
                 mostrarMensaje(
                     mensaje,
                     'Ingresa un correo válido.'
                 )
+
+
                 return
+
             }
+
+
+
+
 
 
             bloquearBoton(
                 boton,
                 'Ingresando...'
             )
+
+
+
+
 
 
             const resultado =
@@ -515,16 +996,36 @@ function inicializarLogin() {
                 )
 
 
-            liberarBoton(boton)
 
 
-            if (!resultado.ok) {
+
+            liberarBoton(
+                boton
+            )
+
+
+
+
+
+            if (
+                !resultado.ok
+            ) {
+
+
                 mostrarMensaje(
                     mensaje,
-                    mensajeDeError(resultado.error)
+                    mensajeDeError(
+                        resultado.error
+                    )
                 )
+
+
                 return
+
             }
+
+
+
 
 
             mostrarMensaje(
@@ -534,52 +1035,101 @@ function inicializarLogin() {
             )
 
 
-            setTimeout(() => {
-                window.location.href = 'perfil.html'
-            }, 800)
+
+
+
+            setTimeout(
+                () => {
+
+                    window.location.href =
+                        'perfil.html'
+
+                },
+                800
+            )
+
+
+
         }
     )
+
+
+
 }
 
 
-// Si alguien con sesión activa visita login o registro,
-// lo enviamos directamente a su perfil.
+
+
+
+
+// ============================================================
+// REDIRECCIÓN SI YA EXISTE SESIÓN
+// ============================================================
+
+
+
 async function redirigirSiYaTieneSesion() {
+
+
     const enPaginaPublica =
-        document.getElementById('formulario-login') ||
-        document.getElementById('formulario-registro')
+        document.getElementById(
+            'formulario-login'
+        ) ||
+        document.getElementById(
+            'formulario-registro'
+        )
+
+
 
     if (!enPaginaPublica) return
+
+
+
 
 
     const haySesion =
         await verificarSesion()
 
 
+
+
+
     if (haySesion) {
-        window.location.href = 'perfil.html'
+
+
+        window.location.href =
+            'perfil.html'
+
+
     }
+
+
 }
+// ============================================================
+// PÁGINA: recuperar-contrasena.html
+// ============================================================
 
 
-// ------------------------------------------------------------
-// Página: recuperar-contrasena.html
-// ------------------------------------------------------------
-
-// Solicita a Supabase el envío del correo que contiene
-// el enlace necesario para recuperar la contraseña.
 function inicializarRecuperacionContrasena() {
+
+
     const formulario =
         document.getElementById(
             'formulario-recuperacion'
         )
 
+
     if (!formulario) return
+
+
+
 
     const mensaje =
         document.getElementById(
             'mensaje-recuperacion'
         )
+
+
 
     const boton =
         document.getElementById(
@@ -587,11 +1137,20 @@ function inicializarRecuperacionContrasena() {
         )
 
 
+
+
     formulario.addEventListener(
         'submit',
         async (evento) => {
+
+
             evento.preventDefault()
-            limpiarMensaje(mensaje)
+
+
+            limpiarMensaje(
+                mensaje
+            )
+
 
 
             const correo =
@@ -603,22 +1162,46 @@ function inicializarRecuperacionContrasena() {
                     .trim()
 
 
-            if (campoVacio(correo)) {
+
+
+
+            if (
+                campoVacio(correo)
+            ) {
+
+
                 mostrarMensaje(
                     mensaje,
                     'Ingresa tu correo.'
                 )
+
+
                 return
+
             }
 
 
-            if (!correoValido(correo)) {
+
+
+
+            if (
+                !correoValido(correo)
+            ) {
+
+
                 mostrarMensaje(
                     mensaje,
                     'Ingresa un correo válido.'
                 )
+
+
                 return
+
             }
+
+
+
+
 
 
             bloquearBoton(
@@ -627,14 +1210,17 @@ function inicializarRecuperacionContrasena() {
             )
 
 
-            // Genera la dirección de esta misma aplicación
-            // a la que Supabase debe regresar después de que
-            // el usuario abra el enlace recibido por correo.
+
+
+
             const urlRedireccion =
                 new URL(
                     'actualizar-contrasena.html',
                     window.location.href
                 ).href
+
+
+
 
 
             const resultado =
@@ -644,20 +1230,38 @@ function inicializarRecuperacionContrasena() {
                 )
 
 
-            liberarBoton(boton)
 
 
-            if (!resultado.ok) {
+
+            liberarBoton(
+                boton
+            )
+
+
+
+
+
+            if (
+                !resultado.ok
+            ) {
+
+
                 mostrarMensaje(
                     mensaje,
-                    mensajeDeError(resultado.error)
+                    mensajeDeError(
+                        resultado.error
+                    )
                 )
+
+
                 return
+
             }
 
 
-            // Se utiliza un mensaje genérico para no revelar
-            // si una dirección de correo está registrada.
+
+
+
             mostrarMensaje(
                 mensaje,
                 'Si existe una cuenta asociada a ese correo, recibirás un enlace para cambiar tu contraseña.',
@@ -665,30 +1269,52 @@ function inicializarRecuperacionContrasena() {
             )
 
 
+
             formulario.reset()
+
+
+
         }
     )
+
+
 }
 
 
-// ------------------------------------------------------------
-// Página: actualizar-contrasena.html
-// ------------------------------------------------------------
 
-// Permite establecer una nueva contraseña después de entrar
-// mediante el enlace de recuperación enviado por Supabase.
+
+
+
+
+
+
+// ============================================================
+// PÁGINA: actualizar-contrasena.html
+// ============================================================
+
+
 function inicializarActualizacionContrasena() {
+
+
     const formulario =
         document.getElementById(
             'formulario-actualizar-contrasena'
         )
 
+
     if (!formulario) return
+
+
+
+
 
     const mensaje =
         document.getElementById(
             'mensaje-actualizar-contrasena'
         )
+
+
+
 
     const boton =
         document.getElementById(
@@ -696,11 +1322,23 @@ function inicializarActualizacionContrasena() {
         )
 
 
+
+
+
     formulario.addEventListener(
         'submit',
         async (evento) => {
+
+
             evento.preventDefault()
-            limpiarMensaje(mensaje)
+
+
+            limpiarMensaje(
+                mensaje
+            )
+
+
+
 
 
             const password =
@@ -710,6 +1348,9 @@ function inicializarActualizacionContrasena() {
                     )
                     .value
 
+
+
+
             const confirmarPassword =
                 document
                     .getElementById(
@@ -718,34 +1359,65 @@ function inicializarActualizacionContrasena() {
                     .value
 
 
+
+
+
             if (
                 campoVacio(password) ||
                 campoVacio(confirmarPassword)
             ) {
+
+
                 mostrarMensaje(
                     mensaje,
                     'Completa ambos campos de contraseña.'
                 )
+
+
                 return
+
             }
 
 
-            if (password.length < 6) {
+
+
+
+            if (
+                password.length < 6
+            ) {
+
+
                 mostrarMensaje(
                     mensaje,
                     'La contraseña debe tener al menos 6 caracteres.'
                 )
+
+
                 return
+
             }
 
 
-            if (password !== confirmarPassword) {
+
+
+
+            if (
+                password !== confirmarPassword
+            ) {
+
+
                 mostrarMensaje(
                     mensaje,
                     'Las contraseñas no coinciden.'
                 )
+
+
                 return
+
             }
+
+
+
 
 
             bloquearBoton(
@@ -754,20 +1426,45 @@ function inicializarActualizacionContrasena() {
             )
 
 
+
+
+
             const resultado =
-                await actualizarContrasena(password)
+                await actualizarContrasena(
+                    password
+                )
 
 
-            liberarBoton(boton)
 
 
-            if (!resultado.ok) {
+
+            liberarBoton(
+                boton
+            )
+
+
+
+
+
+            if (
+                !resultado.ok
+            ) {
+
+
                 mostrarMensaje(
                     mensaje,
-                    mensajeDeError(resultado.error)
+                    mensajeDeError(
+                        resultado.error
+                    )
                 )
+
+
                 return
+
             }
+
+
+
 
 
             mostrarMensaje(
@@ -777,105 +1474,219 @@ function inicializarActualizacionContrasena() {
             )
 
 
-            setTimeout(() => {
-                window.location.href =
-                    'iniciar-sesion.html'
-            }, 1500)
+
+
+
+            setTimeout(
+                () => {
+
+                    window.location.href =
+                        'iniciar-sesion.html'
+
+                },
+                1500
+            )
+
+
+
         }
     )
+
+
+
 }
 
 
-// ------------------------------------------------------------
-// Página: perfil.html
-// ------------------------------------------------------------
 
-// Coloca en la interfaz los datos del perfil
-// obtenidos desde Supabase.
+
+
+
+
+
+
+// ============================================================
+// PÁGINA: perfil.html
+// ============================================================
+
+
+
 function rellenarPerfil(perfil) {
-    const campos = {
+
+
+
+    const camposTexto = {
+
+
         'perfil-nombres':
             perfil.nombres,
+
 
         'perfil-apellidos':
             perfil.apellidos,
 
+
         'perfil-correo':
             perfil.correo,
 
+
         'perfil-rol':
             perfil.rol
+
+
     }
+
+
+
+
 
 
     for (
         const [id, valor]
-        of Object.entries(campos)
+        of Object.entries(camposTexto)
     ) {
+
+
         const elemento =
-            document.getElementById(id)
+            document.getElementById(
+                id
+            )
+
+
 
         if (elemento) {
+
+
             elemento.textContent =
                 valor || '—'
+
+
         }
+
+
     }
 
 
-    const camposEditables = {
-        'perfil-tipo-documento':
-            perfil.tipo_documento,
 
-        'perfil-documento':
-            perfil.documento_identidad,
+
+
+
+
+    const camposFormulario = {
+
+
+
+        'perfil-nombres-editar':
+            perfil.nombres,
+
+
+
+        'perfil-apellidos-editar':
+            perfil.apellidos,
+
+
 
         'perfil-telefono':
             perfil.telefono,
 
-        'perfil-institucion':
-            perfil.institucion,
 
-        'perfil-carrera':
-            perfil.carrera
+
+        'perfil-tipo-participante':
+            perfil.tipo_participante,
+
+
+
+        'perfil-codigo-matricula':
+            perfil.codigo_matricula,
+
+
+
+        'perfil-semestre':
+            perfil.semestre,
+
+
+
+        'perfil-detalle-tipo':
+            perfil.detalle_tipo_participante
+
+
+
     }
+
+
+
 
 
     for (
         const [id, valor]
-        of Object.entries(camposEditables)
+        of Object.entries(camposFormulario)
     ) {
+
+
         const elemento =
-            document.getElementById(id)
+            document.getElementById(
+                id
+            )
+
+
 
         if (elemento) {
+
+
             elemento.value =
                 valor || ''
+
+
         }
+
+
     }
+
+
+
 }
 
 
-// Protege perfil.html para que solamente pueda
-// acceder una persona que tenga una sesión activa.
+
+
+
 async function inicializarPerfil() {
+
+
+
     const contenedor =
         document.getElementById(
             'perfil-contenido'
         )
 
+
+
     if (!contenedor) return
+
+
+
+
 
 
     const haySesion =
         await verificarSesion()
 
 
+
     if (!haySesion) {
+
+
         window.location.href =
             'iniciar-sesion.html'
 
+
         return
+
     }
+
+
+
+
+
 
 
     const mensaje =
@@ -884,39 +1695,328 @@ async function inicializarPerfil() {
         )
 
 
+
+
+
+
+
     const resultado =
         await obtenerPerfilPropio()
 
 
-    if (!resultado.ok) {
+
+
+
+    if (
+        !resultado.ok
+    ) {
+
+
         mostrarMensaje(
             mensaje,
-            mensajeDeError(resultado.error)
+            mensajeDeError(
+                resultado.error
+            )
         )
+
+
         return
+
     }
 
 
-    rellenarPerfil(resultado.perfil)
+
+
+
+    rellenarPerfil(
+        resultado.perfil
+    )
+
+
+
     contenedor.hidden = false
 
 
-    // --------------------------------------------------------
-    // Edición de la información del perfil
-    // --------------------------------------------------------
 
-    const formularioEdicion =
+
+
+
+
+    const selectorTipo =
+        document.getElementById(
+            'perfil-tipo-participante'
+        )
+
+
+
+    const camposEstudiante =
+        document.getElementById(
+            'perfil-campos-estudiante'
+        )
+
+
+
+    const camposOtro =
+        document.getElementById(
+            'perfil-campos-otro'
+        )
+
+
+
+
+
+    function actualizarCamposPerfil() {
+
+
+
+        const estudiante =
+            selectorTipo.value === 'ESTUDIANTE'
+
+
+
+
+
+        camposEstudiante.hidden =
+            !estudiante
+
+
+
+
+
+        camposOtro.hidden =
+            estudiante
+
+
+
+
+
+    }
+
+
+
+
+
+
+    if (selectorTipo) {
+
+
+        selectorTipo.addEventListener(
+            'change',
+            actualizarCamposPerfil
+        )
+
+
+        actualizarCamposPerfil()
+
+    }
+
+
+
+
+
+
+
+
+
+    const formulario =
         document.getElementById(
             'formulario-perfil'
         )
 
 
-    if (formularioEdicion) {
-        formularioEdicion.addEventListener(
+
+
+
+    if (formulario) {
+
+
+
+        formulario.addEventListener(
             'submit',
             async (evento) => {
+
+
                 evento.preventDefault()
-                limpiarMensaje(mensaje)
+
+
+                limpiarMensaje(
+                    mensaje
+                )
+
+
+
+
+
+
+                const nombres =
+                    document
+                        .getElementById(
+                            'perfil-nombres-editar'
+                        )
+                        .value
+                        .trim()
+
+
+
+
+                const apellidos =
+                    document
+                        .getElementById(
+                            'perfil-apellidos-editar'
+                        )
+                        .value
+                        .trim()
+
+
+
+
+
+                const telefono =
+                    document
+                        .getElementById(
+                            'perfil-telefono'
+                        )
+                        .value
+                        .trim()
+                if (
+                    !telefonoPeruValido(telefono)
+                ) {
+
+                    mostrarMensaje(
+                    mensaje,
+                    'El teléfono debe tener 9 dígitos y comenzar con 9.'
+                    )
+
+
+                    return
+
+                }
+
+
+
+
+
+                const tipoParticipante =
+                    document
+                        .getElementById(
+                            'perfil-tipo-participante'
+                        )
+                        .value
+
+
+
+
+
+                const codigoMatricula =
+                    document
+                        .getElementById(
+                            'perfil-codigo-matricula'
+                        )
+                        .value
+                        .trim()
+
+
+
+
+
+                const semestre =
+                    document
+                        .getElementById(
+                            'perfil-semestre'
+                        )
+                        .value
+
+
+
+
+
+                const detalleTipo =
+                    document
+                        .getElementById(
+                            'perfil-detalle-tipo'
+                        )
+                        .value
+                        .trim()
+
+
+
+
+
+
+
+
+                if (
+                    tipoParticipante === 'ESTUDIANTE'
+                ) {
+
+
+
+                    if (
+                        !codigoMatriculaValido(
+                            codigoMatricula
+                        )
+                    ) {
+
+
+                        mostrarMensaje(
+                            mensaje,
+                            'El código de matrícula debe tener 10 números y una letra final.'
+                        )
+
+
+                        return
+
+                    }
+
+
+
+                    if (
+                        campoVacio(semestre)
+                    ) {
+
+
+                        mostrarMensaje(
+                            mensaje,
+                            'Selecciona tu semestre.'
+                        )
+
+
+                        return
+
+                    }
+
+
+                }
+
+
+
+
+
+
+
+
+                if (
+                    tipoParticipante === 'OTRO'
+                    &&
+                    campoVacio(detalleTipo)
+                ) {
+
+
+                    mostrarMensaje(
+                        mensaje,
+                        'Especifica tu tipo de participante.'
+                    )
+
+
+                    return
+
+                }
+
+
+
+
+
+
 
 
                 const boton =
@@ -925,52 +2025,63 @@ async function inicializarPerfil() {
                     )
 
 
+
+
+
                 bloquearBoton(
                     boton,
                     'Guardando...'
                 )
 
 
+
+
+
+
+
+
                 const cambios = {
-                    tipo_documento:
-                        document
-                            .getElementById(
-                                'perfil-tipo-documento'
-                            )
-                            .value,
 
-                    documento_identidad:
-                        document
-                            .getElementById(
-                                'perfil-documento'
-                            )
-                            .value
-                            .trim(),
 
-                    telefono:
-                        document
-                            .getElementById(
-                                'perfil-telefono'
-                            )
-                            .value
-                            .trim(),
+                    nombres,
 
-                    institucion:
-                        document
-                            .getElementById(
-                                'perfil-institucion'
-                            )
-                            .value
-                            .trim(),
 
-                    carrera:
-                        document
-                            .getElementById(
-                                'perfil-carrera'
-                            )
-                            .value
-                            .trim()
+                    apellidos,
+
+
+                    telefono,
+
+
+
+                    tipo_participante:
+                        tipoParticipante,
+
+
+
+                    codigo_matricula:
+                        tipoParticipante === 'ESTUDIANTE'
+                            ? codigoMatricula
+                            : null,
+
+
+
+                    semestre:
+                        tipoParticipante === 'ESTUDIANTE'
+                            ? semestre
+                            : null,
+
+
+
+                    detalle_tipo_participante:
+                        tipoParticipante === 'OTRO'
+                            ? detalleTipo
+                            : null
+
+
                 }
+
+
+
 
 
                 const respuesta =
@@ -979,18 +2090,36 @@ async function inicializarPerfil() {
                     )
 
 
-                liberarBoton(boton)
 
 
-                if (!respuesta.ok) {
+
+                liberarBoton(
+                    boton
+                )
+
+
+
+
+
+                if (
+                    !respuesta.ok
+                ) {
+
+
                     mostrarMensaje(
                         mensaje,
                         mensajeDeError(
                             respuesta.error
                         )
                     )
+
+
                     return
+
                 }
+
+
+
 
 
                 mostrarMensaje(
@@ -998,58 +2127,101 @@ async function inicializarPerfil() {
                     'Perfil actualizado correctamente.',
                     'exito'
                 )
+
+
+
             }
         )
+
+
     }
 
 
-    // --------------------------------------------------------
-    // Cierre de sesión
-    // --------------------------------------------------------
 
-    const botonCerrarSesion =
+
+
+
+
+
+
+    const botonCerrar =
         document.getElementById(
             'btn-cerrar-sesion'
         )
 
 
-    if (botonCerrarSesion) {
-        botonCerrarSesion.addEventListener(
+
+
+    if (botonCerrar) {
+
+
+
+        botonCerrar.addEventListener(
             'click',
             async () => {
+
+
                 bloquearBoton(
-                    botonCerrarSesion,
+                    botonCerrar,
                     'Cerrando...'
                 )
+
 
 
                 await cerrarSesion()
 
 
+
                 window.location.href =
                     'iniciar-sesion.html'
+
+
             }
         )
+
+
     }
+
+
+
 }
 
 
-// ------------------------------------------------------------
-// Arranque
-// ------------------------------------------------------------
 
-// interfaz.js se carga en todas las páginas del módulo.
-// Cada inicializador comprueba primero si los elementos
-// correspondientes existen, por lo que únicamente se ejecuta
-// la lógica necesaria para la página que está abierta.
+
+
+
+
+
+
+// ============================================================
+// INICIO DEL MÓDULO
+// ============================================================
+
+
+
 document.addEventListener(
     'DOMContentLoaded',
     () => {
+
+
         redirigirSiYaTieneSesion()
+
+
         inicializarRegistro()
+
+
         inicializarLogin()
+
+
         inicializarRecuperacionContrasena()
+
+
         inicializarActualizacionContrasena()
+
+
         inicializarPerfil()
+
+
     }
 )
